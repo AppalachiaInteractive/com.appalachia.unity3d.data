@@ -227,7 +227,6 @@ namespace Appalachia.Data
 #region User Modifiable
       
 #endregion // User Modifiable
-
 // DO NOT MODIFY: START       
 
         internal static int ConvertFromVersion(string version)
