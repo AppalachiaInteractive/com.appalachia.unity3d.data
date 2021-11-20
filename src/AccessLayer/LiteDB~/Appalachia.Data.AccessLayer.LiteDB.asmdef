@@ -1,0 +1,17 @@
+{
+    "name": "Appalachia.Data.AccessLayer.LiteDB",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a516fad977d876d4f82ad30f506f5e2f",
+        "GUID:e370354b945368c4796a0dde452a58af"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
