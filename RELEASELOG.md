@@ -15,6 +15,7 @@ Development environment loaded!
 `0.2.0`
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 8003444e8196140edf559c89026654c6b3d1140d | 2021-11-20 | Chris Schubert | Updating changelog and releaselog |
 | ee19cb0cc3c1f530d0f0540e2aec96306f2825c5 | 2021-11-20 | Chris Schubert | Updating changelog and releaselog |
 | 631c7fb036dfbd4bc78ccfe39cd155f75158d3a9 | 2021-11-20 | Chris Schubert | Updating changelog and releaselog |
 | 9057aa38d5ab663059551a7965011d7b71cb0a1d | 2021-11-20 | Chris Schubert | Updating changelog and releaselog |
