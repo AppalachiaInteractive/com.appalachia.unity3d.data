@@ -1,6 +1,8 @@
 using System;
+using Appalachia.Core.Attributes;
 using Appalachia.Core.Scriptables;
 using Appalachia.Data.Core.Collections;
+using UnityEngine;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 

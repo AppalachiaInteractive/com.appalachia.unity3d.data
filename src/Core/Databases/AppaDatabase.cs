@@ -2,6 +2,7 @@ using System;
 using Appalachia.Data.Core.AccessLayer;
 using Appalachia.Data.Core.Collections;
 using Appalachia.Data.Core.Documents;
+using Appalachia.Utility.Logging;
 using Newtonsoft.Json;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
@@ -35,7 +36,15 @@ namespace Appalachia.Data.Core.Databases
         {
             using (_PRF_RegisterCollection.Auto())
             {
-                InitializeInternal();
+#if UNITY_EDITOR
+                var documentType = typeof(TD);
+                var collectionType = typeof(TC);
+
+                if (collectionType.Name != (documentType.Name + "Collection"))
+                {
+                    AppaLog.Error("The collection name must match the document type name!");
+                }
+#endif
 
                 if (collection == null)
                 {

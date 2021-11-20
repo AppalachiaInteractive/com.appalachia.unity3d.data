@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.Data.Core.Collections;
+using Appalachia.Utility.Execution;
 using Newtonsoft.Json;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
@@ -14,12 +15,6 @@ namespace Appalachia.Data.Core.Databases
 
         [NonSerialized, JsonProperty]
         protected List<AppaCollectionBase> _collections;
-
-        [NonSerialized, JsonIgnore]
-        private bool _initialized;
-
-        [NonSerialized, JsonIgnore]
-        private bool _initializing;
 
         #endregion
 
@@ -41,22 +36,33 @@ namespace Appalachia.Data.Core.Databases
             }
         }
 
+        private static readonly ProfilerMarker _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));
+        
+        protected override void OnEnable()
+        {
+            using (_PRF_OnEnable.Auto())
+            {
+                base.OnEnable();
+
+                InitializeInternal();
+            }
+        }
+
         protected void InitializeInternal()
         {
             using (_PRF_Initialize.Auto())
             {
-                if (_initializing || _initialized)
-                {
-                    return;
-                }
+                initializationData.Initialize(
+                    this,
+                    nameof(AppaCollectionBase),
+                    Initializer.TagState.NonSerialized,
+                    () =>
+                    {
+                        _collections = new List<AppaCollectionBase>();
 
-                _initializing = true;
-                _collections ??= new List<AppaCollectionBase>();
-
-                OnInitialize();
-
-                _initializing = false;
-                _initialized = true;
+                        OnInitialize();
+                    }
+                );
             }
         }
 
