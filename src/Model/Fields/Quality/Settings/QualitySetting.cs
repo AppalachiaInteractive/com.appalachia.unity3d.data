@@ -1,5 +1,6 @@
 using System;
 using Appalachia.Data.Core.Fields;
+using Appalachia.Utility.Extensions;
 using Unity.Profiling;
 
 namespace Appalachia.Data.Model.Fields.Quality.Settings
@@ -48,7 +49,7 @@ namespace Appalachia.Data.Model.Fields.Quality.Settings
         {
             using (_PRF_Set.Auto())
             {
-                SetDirty();
+               MarkFieldModified();
 
                 switch (preset)
                 {

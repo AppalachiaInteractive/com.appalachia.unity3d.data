@@ -52,7 +52,7 @@ namespace Appalachia.Data.Core.Databases
         {
             using (_PRF_Initialize.Auto())
             {
-                initializationData.Initialize(
+                initializer.Initialize(
                     this,
                     nameof(AppaCollectionBase),
                     Initializer.TagState.NonSerialized,

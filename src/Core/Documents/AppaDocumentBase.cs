@@ -1,6 +1,7 @@
 using System;
 using Appalachia.CI.Integration.Attributes;
 using Appalachia.Data.Core.Attributes;
+using Appalachia.Utility.Extensions;
 using Unity.Profiling;
 using UnityEngine;
 
@@ -74,11 +75,11 @@ namespace Appalachia.Data.Core.Documents
             set => _initialVersion = value;
         }
 
-        public new void SetDirty()
+        public void MarkModified()
         {
-            using (_PRF_SetDirty.Auto())
+            using (_PRF_MarkModified.Auto())
             {
-                base.SetDirty();
+                this.MarkAsModified();
                 IsDirty = true;
                 DateUpdated = DateTime.UtcNow;
             }
@@ -96,7 +97,7 @@ namespace Appalachia.Data.Core.Documents
             new ProfilerMarker(_PRF_PFX + nameof(AppaDocumentBase));
 
         private static readonly ProfilerMarker
-            _PRF_SetDirty = new ProfilerMarker(_PRF_PFX + nameof(SetDirty));
+            _PRF_MarkModified = new ProfilerMarker(_PRF_PFX + nameof(MarkModified));
 
         #endregion
     }

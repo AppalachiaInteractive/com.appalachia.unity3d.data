@@ -27,15 +27,15 @@ namespace Appalachia.Data.Core.Fields
 
         public DateTime DateUpdated { get; set; }
 
-        [DataIgnore] public bool IsDirty { get; set; }
+        [DataIgnore] public bool HasBeenModified { get; set; }
 
         #endregion
 
-        public void SetDirty()
+        public void MarkFieldModified()
         {
-            using (_PRF_SetDirty.Auto())
+            using (_PRF_MarkModified.Auto())
             {
-                IsDirty = true;
+                HasBeenModified = true;
                 DateUpdated = DateTime.UtcNow;
             }
         }
@@ -52,7 +52,7 @@ namespace Appalachia.Data.Core.Fields
             new ProfilerMarker(_PRF_PFX + nameof(AppaField));
 
         private static readonly ProfilerMarker
-            _PRF_SetDirty = new ProfilerMarker(_PRF_PFX + nameof(SetDirty));
+            _PRF_MarkModified = new ProfilerMarker(_PRF_PFX + nameof(MarkFieldModified));
 
         #endregion
     }

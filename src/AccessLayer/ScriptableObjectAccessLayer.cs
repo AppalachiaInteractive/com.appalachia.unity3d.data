@@ -7,6 +7,7 @@ using Appalachia.Core.Aspects;
 using Appalachia.Data.Core;
 using Appalachia.Data.Core.AccessLayer;
 using Appalachia.Data.Core.Configuration;
+using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Reflection.Extensions;
 using Unity.Profiling;
 
@@ -37,7 +38,7 @@ namespace Appalachia.Data.AccessLayer
 
                 var subfolder = AppaPath.Combine(DataStorageDirectoryPath, "collections");
 
-                var instance = AppalachiaObjectFactory.LoadOrCreateNew<TC>(fileName, subfolder);
+                var instance = AppalachiaObjectFactory.LoadExistingOrCreateNewAsset<TC>(fileName, subfolder);
 
                 return instance;
             }
@@ -49,7 +50,7 @@ namespace Appalachia.Data.AccessLayer
             {
                 var fileName = $"{DataStorageFileNameWithoutExtension}.asset";
 
-                var instance = AppalachiaObjectFactory.LoadOrCreateNew<TDB>(
+                var instance = AppalachiaObjectFactory.LoadExistingOrCreateNewAsset<TDB>(
                     fileName,
                     DataStorageDirectoryPath
                 );
@@ -68,7 +69,7 @@ namespace Appalachia.Data.AccessLayer
 
                 var fileName = $"{typeof(TD).GetSimpleReadableName()}-{existing}.asset";
 
-                var instance = AppalachiaObjectFactory.LoadOrCreateNew<TD>(fileName, subfolder);
+                var instance = AppalachiaObjectFactory.LoadExistingOrCreateNewAsset<TD>(fileName, subfolder);
 
                 return instance;
             }
@@ -92,10 +93,10 @@ namespace Appalachia.Data.AccessLayer
             {
                 foreach (var document in collection.BoxedDocuments)
                 {
-                    UnityEditor.EditorUtility.SetDirty(document);
+                    document.MarkAsModified();
                 }
 
-                UnityEditor.EditorUtility.SetDirty(collection);
+                collection.MarkAsModified();
 
                 AssetDatabaseManager.SaveAssets();
             }
@@ -109,13 +110,13 @@ namespace Appalachia.Data.AccessLayer
                 {
                     foreach (var document in collection.BoxedDocuments)
                     {
-                        UnityEditor.EditorUtility.SetDirty(document);
+                        document.MarkAsModified();
                     }
 
-                    UnityEditor.EditorUtility.SetDirty(collection);
+                    collection.MarkAsModified();
                 }
 
-                UnityEditor.EditorUtility.SetDirty(database);
+                database.MarkAsModified();
 
                 AssetDatabaseManager.SaveAssets();
             }
@@ -125,7 +126,7 @@ namespace Appalachia.Data.AccessLayer
         {
             using (_PRF_SaveDocument.Auto())
             {
-                UnityEditor.EditorUtility.SetDirty(document);
+                document.MarkAsModified();
 
                 AssetDatabaseManager.SaveAssets();
                 AssetDatabaseManager.Refresh();
