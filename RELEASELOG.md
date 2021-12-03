@@ -13,6 +13,7 @@
 `0.2.0`
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 46f37bf0878a25f2d6ca4dc7842508f307ac6410 | 2021-12-02 | Chris Schubert | Updating changelog and releaselog |
 | 9103e59a4a92971abde195f8339fbe7af41dc866 | 2021-12-02 | Chris Schubert | Scriptable object bases for data model classes |
 | a48b24bb39f4c5e1bba97d8f934c713e416a6513 | 2021-11-21 | Chris Schubert | Updating changelog and releaselog |
 | 5dd1149602507c141857be1e4119c5930c61aee5 | 2021-11-20 | Chris Schubert | Updating changelog and releaselog |
