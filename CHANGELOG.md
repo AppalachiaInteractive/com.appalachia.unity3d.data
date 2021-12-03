@@ -1,6 +1,4 @@
 ```
-C:/Users/Chris/com.appalachia/unity3d/appa/Assets/Appalachia.Data
-Development environment loaded!  
  ________   ___  ___   ________   ________    ________   _______    ________      
 |\   ____\ |\  \|\  \ |\   __  \ |\   ___  \ |\   ____\ |\  ___ \  |\   ____\     
 \ \  \___| \ \  \\\  \\ \  \|\  \\ \  \\ \  \\ \  \___| \ \   __/| \ \  \___|_    
@@ -14,6 +12,8 @@ Development environment loaded!
 ## Releasing
 | Hash | Date | Author | Changes |
 |------|------|--------|---------|
+| 9103e59a4a92971abde195f8339fbe7af41dc866 | 2021-12-02 | Chris Schubert | Scriptable object bases for data model classes |
+| a48b24bb39f4c5e1bba97d8f934c713e416a6513 | 2021-11-21 | Chris Schubert | Updating changelog and releaselog |
 | 5dd1149602507c141857be1e4119c5930c61aee5 | 2021-11-20 | Chris Schubert | Updating changelog and releaselog |
 | 78a0791540fe3367454e13b0dfc634735b32f943 | 2021-11-20 | Chris Schubert | Updating changelog and releaselog |
 | 00943ebe33bdec80aba2e37d6be571999eb47b6e | 2021-11-20 | Chris Schubert | Expanding initialization setup class, and fixing some initialization in appa object bases |
