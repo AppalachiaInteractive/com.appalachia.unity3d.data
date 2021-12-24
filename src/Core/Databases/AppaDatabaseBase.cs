@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Appalachia.Core.Objects.Initialization;
 using Appalachia.Data.Core.Collections;
-using Appalachia.Utility.Execution;
+using Appalachia.Utility.Async;
 using Newtonsoft.Json;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
@@ -24,8 +25,6 @@ namespace Appalachia.Data.Core.Databases
         [ShowInInspector, BoxGroup(nameof(Collections))]
         public IReadOnlyList<AppaCollectionBase> Collections => _collections;
 
-        protected abstract void OnInitialize();
-
         protected virtual void Dispose(bool disposing)
         {
             using (_PRF_Dispose.Auto())
@@ -36,32 +35,17 @@ namespace Appalachia.Data.Core.Databases
             }
         }
 
-        private static readonly ProfilerMarker _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));
-        
-        protected override void OnEnable()
-        {
-            using (_PRF_OnEnable.Auto())
-            {
-                base.OnEnable();
-
-                InitializeInternal();
-            }
-        }
-
-        protected void InitializeInternal()
+        protected override async AppaTask Initialize(Initializer initializer)
         {
             using (_PRF_Initialize.Auto())
             {
-                initializer.Initialize(
+                await base.Initialize(initializer);
+
+                await initializer.Do(
                     this,
                     nameof(AppaCollectionBase),
                     Initializer.TagState.NonSerialized,
-                    () =>
-                    {
-                        _collections = new List<AppaCollectionBase>();
-
-                        OnInitialize();
-                    }
+                    () => { _collections = new List<AppaCollectionBase>(); }
                 );
             }
         }
@@ -84,7 +68,10 @@ namespace Appalachia.Data.Core.Databases
         private const string _PRF_PFX = nameof(AppaDatabaseBase) + ".";
 
         private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(InitializeInternal));
+            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
+
+        private static readonly ProfilerMarker
+            _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));
 
         private static readonly ProfilerMarker _PRF_Dispose = new ProfilerMarker(_PRF_PFX + nameof(Dispose));
 

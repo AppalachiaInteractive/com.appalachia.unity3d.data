@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using Appalachia.Utility.Strings;
 
 namespace UltraLiteDB
 {
@@ -49,14 +50,17 @@ namespace UltraLiteDB
         {
         }
 
-        internal UltraLiteException(int code, string message, params object[] args)
-            : base(string.Format(message, args))
+        internal UltraLiteException(int code, string message, params object[] args) : base(
+            ZString.Format(message, args)
+        )
         {
             this.ErrorCode = code;
         }
 
-        internal UltraLiteException (int code, Exception inner, string message, params object[] args)
-        : base (string.Format (message, args), inner)
+        internal UltraLiteException (int code, Exception inner, string message, params object[] args) : base(
+            ZString.Format(message, args),
+            inner
+        )
         {
             this.ErrorCode = code;
         }
@@ -148,9 +152,12 @@ namespace UltraLiteDB
         {
             var position = (token?.Position - (token?.Value?.Length ?? 0)) ?? 0;
             var str = token?.Type == TokenType.EOF ? "[EOF]" : token?.Value ?? "";
-            var exp = expected == null ? "" : $" Expected `{expected}`.";
+            var exp = expected == null ? "" : ZString.Format(" Expected `{0}`.", expected);
 
-            return new UltraLiteException(UNEXPECTED_TOKEN, $"Unexpected token `{str}` in position {position}.{exp}")
+            return new UltraLiteException(
+                UNEXPECTED_TOKEN,
+                ZString.Format("Unexpected token `{0}` in position {1}.{2}", str, position, exp)
+            )
             {
                 Position = position
             };

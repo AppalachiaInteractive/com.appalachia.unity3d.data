@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -161,7 +161,10 @@ namespace LiteDB.Engine
             {
                 sorter.Insert(keyValues);
 
-                LOG($"sort {sorter.Count} keys in {sorter.Containers.Count} containers", "SORT");
+                LOG(
+                    ZString.Format("sort {0} keys in {1} containers", sorter.Count, sorter.Containers.Count),
+                    "SORT"
+                );
 
                 var result = sorter.Sort().Skip(offset).Take(limit);
 

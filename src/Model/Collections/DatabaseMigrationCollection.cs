@@ -5,5 +5,6 @@ namespace Appalachia.Data.Model.Collections
 {
     public class DatabaseMigrationCollection : AppaCollection<DatabaseMigration, DatabaseMigrationCollection>
     {
+        
     }
 }

@@ -1,8 +1,6 @@
-﻿using LiteDB.Engine;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using static LiteDB.Constants;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB
 {
@@ -52,7 +50,7 @@ namespace LiteDB
         {
             if (field.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(field));
 
-            return BsonExpression.Create($"{field} = {value ?? BsonValue.Null}");
+            return BsonExpression.Create(ZString.Format("{0} = {1}", field, value ?? BsonValue.Null));
         }
 
         /// <summary>
@@ -62,7 +60,7 @@ namespace LiteDB
         {
             if (field.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(field));
 
-            return BsonExpression.Create($"{field} < {value ?? BsonValue.Null}");
+            return BsonExpression.Create(ZString.Format("{0} < {1}", field, value ?? BsonValue.Null));
         }
 
         /// <summary>
@@ -72,7 +70,7 @@ namespace LiteDB
         {
             if (field.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(field));
 
-            return BsonExpression.Create($"{field} <= {value ?? BsonValue.Null}");
+            return BsonExpression.Create(ZString.Format("{0} <= {1}", field, value ?? BsonValue.Null));
         }
 
         /// <summary>
@@ -82,7 +80,7 @@ namespace LiteDB
         {
             if (field.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(field));
 
-            return BsonExpression.Create($"{field} > {value ?? BsonValue.Null}");
+            return BsonExpression.Create(ZString.Format("{0} > {1}", field, value ?? BsonValue.Null));
 
         }
 
@@ -93,7 +91,7 @@ namespace LiteDB
         {
             if (field.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(field));
 
-            return BsonExpression.Create($"{field} >= {value ?? BsonValue.Null}");
+            return BsonExpression.Create(ZString.Format("{0} >= {1}", field, value ?? BsonValue.Null));
         }
 
         /// <summary>
@@ -103,7 +101,14 @@ namespace LiteDB
         {
             if (field.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(field));
 
-            return BsonExpression.Create($"{field} BETWEEN {start ?? BsonValue.Null} AND {end ?? BsonValue.Null}");
+            return BsonExpression.Create(
+                ZString.Format(
+                    "{0} BETWEEN {1} AND {2}",
+                    field,
+                    start ?? BsonValue.Null,
+                    end ?? BsonValue.Null
+                )
+            );
         }
 
         /// <summary>
@@ -114,7 +119,7 @@ namespace LiteDB
             if (field.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(field));
             if (value.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(value));
 
-            return BsonExpression.Create($"{field} LIKE {(new BsonValue(value + "%"))}");
+            return BsonExpression.Create(ZString.Format("{0} LIKE {1}", field, new BsonValue(value + "%")));
         }
 
         /// <summary>
@@ -125,7 +130,9 @@ namespace LiteDB
             if (field.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(field));
             if (value.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(value));
 
-            return BsonExpression.Create($"{field} LIKE {(new BsonValue("%" + value + "%"))}");
+            return BsonExpression.Create(
+                ZString.Format("{0} LIKE {1}", field, new BsonValue("%" + value + "%"))
+            );
         }
 
         /// <summary>
@@ -135,7 +142,7 @@ namespace LiteDB
         {
             if (field.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(field));
 
-            return BsonExpression.Create($"{field} != {value ?? BsonValue.Null}");
+            return BsonExpression.Create(ZString.Format("{0} != {1}", field, value ?? BsonValue.Null));
         }
 
         /// <summary>
@@ -146,7 +153,7 @@ namespace LiteDB
             if (field.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(field));
             if (value == null) throw new ArgumentNullException(nameof(value));
 
-            return BsonExpression.Create($"{field} IN {value}");
+            return BsonExpression.Create(ZString.Format("{0} IN {1}", field, value));
         }
 
         /// <summary>
@@ -178,7 +185,7 @@ namespace LiteDB
             if (left == null) throw new ArgumentNullException(nameof(left));
             if (right == null) throw new ArgumentNullException(nameof(right));
 
-            return $"({left.Source} AND {right.Source})";
+            return ZString.Format("({0} AND {1})", left.Source, right.Source);
         }
 
         /// <summary>
@@ -206,7 +213,7 @@ namespace LiteDB
             if (left == null) throw new ArgumentNullException(nameof(left));
             if (right == null) throw new ArgumentNullException(nameof(right));
 
-            return $"({left.Source} OR {right.Source})";
+            return ZString.Format("({0} OR {1})", left.Source, right.Source);
         }
 
         /// <summary>

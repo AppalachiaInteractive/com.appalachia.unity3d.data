@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Utility.Strings;
 
 namespace UltraLiteDB
 {
@@ -72,7 +73,7 @@ namespace UltraLiteDB
 
         public override string ToString()
         {
-            return string.Format("({0} and {1})", _left, _right);
+            return ZString.Format("({0} and {1})", _left, _right);
         }
     }
 }

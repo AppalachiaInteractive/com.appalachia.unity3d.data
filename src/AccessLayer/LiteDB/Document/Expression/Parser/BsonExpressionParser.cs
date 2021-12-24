@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
-using static LiteDB.Constants;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB
 {
@@ -151,9 +148,32 @@ namespace LiteDB
 
                     if (isLeftEnum && left.IsScalar) left = ConvertToEnumerable(left);
                     //if (isLeftEnum && left.IsScalar) throw new LiteException(0, $"Left expression `{left.Source}` must return multiples values");
-                    if (!isLeftEnum && !left.IsScalar) throw new LiteException(0, $"Left expression `{left.Source}` returns more than one result. Try use ANY or ALL before operant.");
-                    if (!isLeftEnum && !right.IsScalar) throw new LiteException(0, $"Left expression `{right.Source}` must return a single value");
-                    if (right.IsScalar == false) throw new LiteException(0, $"Right expression `{right.Source}` must return a single value");
+                    if (!isLeftEnum && !left.IsScalar)
+                    {
+                        throw new LiteException(
+                            0,
+                            ZString.Format(
+                                "Left expression `{0}` returns more than one result. Try use ANY or ALL before operant.",
+                                left.Source
+                            )
+                        );
+                    }
+
+                    if (!isLeftEnum && !right.IsScalar)
+                    {
+                        throw new LiteException(
+                            0,
+                            ZString.Format("Left expression `{0}` must return a single value", right.Source)
+                        );
+                    }
+
+                    if (right.IsScalar == false)
+                    {
+                        throw new LiteException(
+                            0,
+                            ZString.Format("Right expression `{0}` must return a single value", right.Source)
+                        );
+                    }
 
                     BsonExpression result;
 
@@ -926,7 +946,16 @@ namespace LiteDB
 
             var method = BsonExpression.GetMethod(token.Value, pars.Count);
 
-            if (method == null) throw LiteException.UnexpectedToken($"Method '{token.Value.ToUpper()}' does not exist or contains invalid parameters", token);
+            if (method == null)
+            {
+                throw LiteException.UnexpectedToken(
+                    ZString.Format(
+                        "Method '{0}' does not exist or contains invalid parameters",
+                        token.Value.ToUpper()
+                    ),
+                    token
+                );
+            }
 
             // test if method are decorated with "Variable" (immutable = false)
             if (method.GetCustomAttribute<VolatileAttribute>() != null)
@@ -1284,8 +1313,21 @@ namespace LiteDB
             var values = new Expression[] { item0.Expression, item1.Expression };
 
             // both values must be scalar expressions
-            if (item0.IsScalar == false) throw new LiteException(0, $"Expression `{item0.Source}` must be a scalar expression");
-            if (item1.IsScalar == false) throw new LiteException(0, $"Expression `{item0.Source}` must be a scalar expression");
+            if (item0.IsScalar == false)
+            {
+                throw new LiteException(
+                    0,
+                    ZString.Format("Expression `{0}` must be a scalar expression", item0.Source)
+                );
+            }
+
+            if (item1.IsScalar == false)
+            {
+                throw new LiteException(
+                    0,
+                    ZString.Format("Expression `{0}` must be a scalar expression", item0.Source)
+                );
+            }
 
             var arrValues = Expression.NewArrayInit(typeof(BsonValue), values.ToArray());
 

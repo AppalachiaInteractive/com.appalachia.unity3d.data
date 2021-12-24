@@ -7,6 +7,7 @@ using Appalachia.Data.Core.Configuration;
 using Appalachia.Data.Core.Databases;
 using Appalachia.Data.Core.Documents;
 using Appalachia.Utility.Reflection.Extensions;
+using Appalachia.Utility.Strings;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
 
@@ -113,7 +114,12 @@ namespace Appalachia.Data.Core.AccessLayer
                 var directory = AppaPath.GetDirectoryName(filePath);
 
                 var backupDate = GetBackupDate();
-                var backupFileName = $"{fileNameWithoutExtension}.{backupDate}{extension}";
+                var backupFileName = ZString.Format(
+                    "{0}.{1}{2}",
+                    fileNameWithoutExtension,
+                    backupDate,
+                    extension
+                );
 
                 var backupPath = AppaPath.Combine(directory, backupFileName);
 
@@ -187,7 +193,7 @@ namespace Appalachia.Data.Core.AccessLayer
                 var date = dateTime.ToString("yyyyMMdd");
                 var time = dateTime.ToString("hhmmssfffffff");
 
-                var backupDate = $"{date}T{time}";
+                var backupDate = ZString.Format("{0}T{1}", date, time);
 
                 return backupDate;
             }
@@ -210,11 +216,13 @@ namespace Appalachia.Data.Core.AccessLayer
             }
         }
 
+#if UNITY_EDITOR
         [Button]
         private void SelectStorage()
         {
             AssetDatabaseManager.SetSelection(DataStorageFilePath);
         }
+#endif
 
         #region IDataAccess Members
 

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using static LiteDB.Constants;
+﻿using System.Collections.Generic;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB.Engine
 {
@@ -104,23 +102,23 @@ namespace LiteDB.Engine
         {
             if (_start.IsMinValue && _endEquals == false)
             {
-                return string.Format("INDEX SCAN({0} < {1})", this.Name, _end);
+                return ZString.Format("INDEX SCAN({0} < {1})", Name, _end);
             }
             else if (_start.IsMinValue && _endEquals == true)
             {
-                return string.Format("INDEX SCAN({0} <= {1})", this.Name, _end);
+                return ZString.Format("INDEX SCAN({0} <= {1})", Name, _end);
             }
             else if (_end.IsMaxValue && _startEquals == false)
             {
-                return string.Format("INDEX SCAN({0} > {1})", this.Name, _start);
+                return ZString.Format("INDEX SCAN({0} > {1})", Name, _start);
             }
             else if (_end.IsMaxValue && _startEquals == true)
             {
-                return string.Format("INDEX SCAN({0} >= {1})", this.Name, _start);
+                return ZString.Format("INDEX SCAN({0} >= {1})", Name, _start);
             }
             else
             {
-                return string.Format("INDEX RANGE SCAN({0} BETWEEN {1} AND {2})", this.Name, _start, _end);
+                return ZString.Format("INDEX RANGE SCAN({0} BETWEEN {1} AND {2})", Name, _start, _end);
             }
         }
     }

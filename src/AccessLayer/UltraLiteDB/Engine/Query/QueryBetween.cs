@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Utility.Strings;
 
 namespace UltraLiteDB
 {
@@ -79,7 +80,8 @@ namespace UltraLiteDB
 
         public override string ToString()
         {
-            return string.Format("{0}({1} between {2}{3} and {4}{5})",
+            return ZString.Format(
+                "{0}({1} between {2}{3} and {4}{5})",
                 this.UseFilter ? "Filter" : this.UseIndex ? "IndexSeek" : "",
                 this.Field,
                 _startEquals ? "[" : "(",

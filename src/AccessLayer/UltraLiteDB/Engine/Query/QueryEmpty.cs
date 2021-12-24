@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Appalachia.Utility.Strings;
 
 namespace UltraLiteDB
 {
@@ -27,7 +28,7 @@ namespace UltraLiteDB
 
         public override string ToString()
         {
-            return string.Format("(false)");
+            return ZString.Format("(false)");
         }
     }
 }

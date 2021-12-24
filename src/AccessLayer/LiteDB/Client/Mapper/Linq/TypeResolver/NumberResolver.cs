@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using static LiteDB.Constants;
+﻿using System.Reflection;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB
 {
@@ -30,7 +24,8 @@ namespace LiteDB
                     break;
 
                 // static methods
-                case "Parse": return $"{_parseMethod}(@0)";
+                case "Parse":
+                    return ZString.Format("{0}(@0)", _parseMethod);
                 case "Equals": return "# = @0";
             };
 

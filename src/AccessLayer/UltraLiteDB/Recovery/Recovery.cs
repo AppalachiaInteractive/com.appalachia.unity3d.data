@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Appalachia.Utility.Strings;
 
 namespace UltraLiteDB
 {
@@ -44,7 +45,7 @@ namespace UltraLiteDB
                     }
                     catch (Exception ex)
                     {
-                        log.AppendLine($"Page {i} (DataPage) Error: {ex.Message}");
+                        log.AppendLine(ZString.Format("Page {0} (DataPage) Error: {1}", i, ex.Message));
                         continue;
                     }
 
@@ -71,14 +72,16 @@ namespace UltraLiteDB
                         }
                         catch (Exception ex)
                         {
-                            log.AppendLine($"Document {block.Value.Position} Error: {ex.Message}");
+                            log.AppendLine(
+                                ZString.Format("Document {0} Error: {1}", block.Value.Position, ex.Message)
+                            );
                             continue;
                         }
                     }
                 }
             }
 
-            log.Insert(0, $"Document recovery count: {count}\n");
+            log.Insert(0, ZString.Format("Document recovery count: {0}\n", count));
 
             return log.ToString();
         }
@@ -104,7 +107,7 @@ namespace UltraLiteDB
                 }
                 catch (Exception ex)
                 {
-                    log.AppendLine($"Page {col.Value} (Collection) Error: {ex.Message}");
+                    log.AppendLine(ZString.Format("Page {0} (Collection) Error: {1}", col.Value, ex.Message));
                     continue;
                 }
 
@@ -155,7 +158,7 @@ namespace UltraLiteDB
                 }
                 catch(Exception ex)
                 {
-                    log.AppendLine($"Page {item.Key} (Collection) Error: {ex.Message}");
+                    log.AppendLine(ZString.Format("Page {0} (Collection) Error: {1}", item.Key, ex.Message));
                     continue;
                 }
 

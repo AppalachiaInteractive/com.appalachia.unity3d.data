@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using static LiteDB.Constants;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB.Engine
 {
@@ -15,7 +14,14 @@ namespace LiteDB.Engine
 
         public override IEnumerable<BsonDocument> Input(BsonValue options)
         {
-            var filename = GetOption(options, "filename")?.AsString ?? throw new LiteException(0, $"Collection ${this.Name} requires string as 'filename' or a document field 'filename'");
+            var filename = GetOption(options, "filename")?.AsString ??
+                           throw new LiteException(
+                               0,
+                               ZString.Format(
+                                   "Collection ${0} requires string as 'filename' or a document field 'filename'",
+                                   Name
+                               )
+                           );
             var encoding = GetOption(options, "encoding", "utf-8").AsString;
 
             using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))

@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -120,7 +114,10 @@ namespace LiteDB.Engine
 
         public void Dispose()
         {
-            LOG($"disposing disk writer queue (with {_queue.Count} pages in queue)", "DISK");
+            LOG(
+                ZString.Format("disposing disk writer queue (with {0} pages in queue)", _queue.Count),
+                "DISK"
+            );
 
             // run all items in queue before dispose
             this.Wait();

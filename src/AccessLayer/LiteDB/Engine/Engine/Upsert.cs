@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -24,7 +25,7 @@ namespace LiteDB.Engine
                 var data = new DataService(snapshot);
                 var count = 0;
 
-                LOG($"upsert `{collection}`", "COMMAND");
+                LOG(ZString.Format("upsert `{0}`", collection), "COMMAND");
 
                 foreach (var doc in docs)
                 {

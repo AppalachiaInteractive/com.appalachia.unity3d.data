@@ -3,7 +3,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-
 namespace UltraLiteDB
 {
     public class JsonWriter
@@ -213,7 +212,7 @@ namespace UltraLiteDB
         private void WriteExtendDataType(string type, string value)
         {
             // format: { "$type": "string-value" }
-            // no string.Format to better performance
+            // no ZString.Format to better performance
             _writer.Write("{\"");
             _writer.Write(type);
             _writer.Write("\":");

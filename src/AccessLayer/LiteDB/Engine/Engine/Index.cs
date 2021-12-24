@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -44,7 +42,7 @@ namespace LiteDB.Engine
                     return false;
                 }
 
-                LOG($"create index `{collection}.{name}`", "COMMAND");
+                LOG(ZString.Format("create index `{0}.{1}`", collection, name), "COMMAND");
 
                 // create index head
                 var index = indexer.CreateIndex(name, expression.Source, unique);

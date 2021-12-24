@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using static LiteDB.Constants;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB.Engine
 {
@@ -18,7 +18,14 @@ namespace LiteDB.Engine
 
         public override IEnumerable<BsonDocument> Input(BsonValue options)
         {
-            var filename = GetOption(options, "filename")?.AsString ?? throw new LiteException(0, $"Collection ${this.Name} requires string as 'filename' or a document field 'filename'");
+            var filename = GetOption(options, "filename")?.AsString ??
+                           throw new LiteException(
+                               0,
+                               ZString.Format(
+                                   "Collection ${0} requires string as 'filename' or a document field 'filename'",
+                                   Name
+                               )
+                           );
             var encoding = GetOption(options, "encoding", "utf-8").AsString;
             var delimiter = GetOption(options, "delimiter", ",").AsString[0];
 
@@ -165,16 +172,16 @@ namespace LiteDB.Engine
                     writer.Write(value.AsDecimal.ToString(CultureInfo.InvariantCulture.NumberFormat));
                     break;
                 case BsonType.Binary:
-                    writer.Write($"\"{Convert.ToBase64String(value.AsBinary)}\"");
+                    writer.Write(ZString.Format("\"{0}\"", Convert.ToBase64String(value.AsBinary)));
                     break;
                 case BsonType.ObjectId:
-                    writer.Write($"\"{value.AsObjectId.ToString()}\"");
+                    writer.Write(ZString.Format("\"{0}\"", value.AsObjectId));
                     break;
                 case BsonType.Guid:
-                    writer.Write($"\"{value.AsGuid.ToString()}\"");
+                    writer.Write(ZString.Format("\"{0}\"", value.AsGuid.ToString()));
                     break;
                 case BsonType.DateTime:
-                    writer.Write($"\"{value.AsDateTime.ToUniversalTime().ToString("o")}\"");
+                    writer.Write(ZString.Format("\"{0}\"", value.AsDateTime.ToUniversalTime().ToString("o")));
                     break;
                 default:
                     writer.Write(value.ToString());

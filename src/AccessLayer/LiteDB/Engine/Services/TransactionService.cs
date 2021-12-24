@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -128,7 +126,10 @@ namespace LiteDB.Engine
 
             if (_monitor.CheckSafepoint(this))
             {
-                LOG($"safepoint flushing transaction pages: {_transPages.TransactionSize}", "TRANSACTION");
+                LOG(
+                    ZString.Format("safepoint flushing transaction pages: {0}", _transPages.TransactionSize),
+                    "TRANSACTION"
+                );
 
                 // if any snapshot are writable, persist pages
                 if (_mode == LockMode.Write)
@@ -250,9 +251,12 @@ namespace LiteDB.Engine
         /// </summary>
         public void Commit()
         {
-            ENSURE(_state == TransactionState.Active, $"transaction must be active to commit (current state: {_state})");
+            ENSURE(
+                _state == TransactionState.Active,
+                ZString.Format("transaction must be active to commit (current state: {0})", _state)
+            );
 
-            LOG($"commit transaction ({_transPages.TransactionSize} pages)", "TRANSACTION");
+            LOG(ZString.Format("commit transaction ({0} pages)", _transPages.TransactionSize), "TRANSACTION");
 
             if (_mode == LockMode.Write || _transPages.HeaderChanged)
             {
@@ -281,9 +285,19 @@ namespace LiteDB.Engine
         /// </summary>
         public void Rollback()
         {
-            ENSURE(_state == TransactionState.Active, $"transaction must be active to rollback (current state: {_state})");
+            ENSURE(
+                _state == TransactionState.Active,
+                ZString.Format("transaction must be active to rollback (current state: {0})", _state)
+            );
 
-            LOG($"rollback transaction ({_transPages.TransactionSize} pages with {_transPages.NewPages.Count} returns)", "TRANSACTION");
+            LOG(
+                ZString.Format(
+                    "rollback transaction ({0} pages with {1} returns)",
+                    _transPages.TransactionSize,
+                    _transPages.NewPages.Count
+                ),
+                "TRANSACTION"
+            );
 
             // if transaction contains new pages, must return to database in another transaction
             if (_transPages.NewPages.Count > 0)

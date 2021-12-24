@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using static LiteDB.Constants;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB.Engine
 {
@@ -40,7 +38,10 @@ namespace LiteDB.Engine
         /// <summary>
         /// Get output data source factory (must implement in inherit class)
         /// </summary>
-        public virtual int Output(IEnumerable<BsonDocument> source, BsonValue options) => throw new LiteException(0, $"{_name} do not support as output collection");
+        public virtual int Output(IEnumerable<BsonDocument> source, BsonValue options)
+        {
+            throw new LiteException(0, ZString.Format("{0} do not support as output collection", _name));
+        }
 
         /// <summary>
         /// Static helper to read options arg as plain value or as document fields
@@ -65,7 +66,10 @@ namespace LiteDB.Engine
                     }
                     else
                     {
-                        throw new LiteException(0, $"Parameter `{key}` expect {defaultValue.Type} value type");
+                        throw new LiteException(
+                            0,
+                            ZString.Format("Parameter `{0}` expect {1} value type", key, defaultValue.Type)
+                        );
                     }
                 }
                 else

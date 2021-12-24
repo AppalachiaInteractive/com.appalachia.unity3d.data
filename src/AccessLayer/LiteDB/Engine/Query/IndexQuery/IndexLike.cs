@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using static LiteDB.Constants;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB.Engine
 {
@@ -119,7 +119,8 @@ namespace LiteDB.Engine
 
         public override string ToString()
         {
-            return string.Format("{0}({1} LIKE \"{2}\")",
+            return ZString.Format(
+                "{0}({1} LIKE \"{2}\")",
                 _startsWith.Length > 0 ? "INDEX SEEK (+RANGE SCAN)" : "FULL INDEX SCAN",
                 this.Name,
                 _pattern);

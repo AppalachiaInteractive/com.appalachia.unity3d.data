@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -24,7 +22,7 @@ namespace LiteDB.Engine
                 var indexer = new IndexService(snapshot, _header.Pragmas.Collation);
                 var data = new DataService(snapshot);
 
-                LOG($"insert `{collection}`", "COMMAND");
+                LOG(ZString.Format("insert `{0}`", collection), "COMMAND");
 
                 foreach (var doc in docs)
                 {

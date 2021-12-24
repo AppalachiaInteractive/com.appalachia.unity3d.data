@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -48,7 +45,10 @@ namespace LiteDB.Engine
             // create new database if not exist yet
             if (isNew)
             {
-                LOG($"creating new database: '{Path.GetFileName(_dataFactory.Name)}'", "DISK");
+                LOG(
+                    ZString.Format("creating new database: '{0}'", Path.GetFileName(_dataFactory.Name)),
+                    "DISK"
+                );
 
                 this.Initialize(_dataPool.Writer, settings.Collation, settings.InitialSize);
             }
@@ -261,7 +261,10 @@ namespace LiteDB.Engine
 
                     var bytesRead = stream.Read(buffer, 0, PAGE_SIZE);
 
-                    ENSURE(bytesRead == PAGE_SIZE, $"ReadFull must read PAGE_SIZE bytes [{bytesRead}]");
+                    ENSURE(
+                        bytesRead == PAGE_SIZE,
+                        ZString.Format("ReadFull must read PAGE_SIZE bytes [{0}]", bytesRead)
+                    );
 
                     yield return new PageBuffer(buffer, 0, 0)
                     {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -91,7 +90,12 @@ namespace LiteDB.Engine
             var bytesLength = IndexNode.GetNodeLength(level, key, out var keyLength);
 
             // test for index key maxlength
-            if (keyLength > MAX_INDEX_KEY_LENGTH) throw LiteException.InvalidIndexKey($"Index key must be less than {MAX_INDEX_KEY_LENGTH} bytes.");
+            if (keyLength > MAX_INDEX_KEY_LENGTH)
+            {
+                throw LiteException.InvalidIndexKey(
+                    ZString.Format("Index key must be less than {0} bytes.", MAX_INDEX_KEY_LENGTH)
+                );
+            }
 
             var indexPage = _snapshot.GetFreeIndexPage(bytesLength, ref index.FreeIndexPageList);
 

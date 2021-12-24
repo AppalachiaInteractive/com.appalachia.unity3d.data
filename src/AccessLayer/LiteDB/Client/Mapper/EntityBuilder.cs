@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using static LiteDB.Constants;
+using Appalachia.Core.Objects.Root;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB
 {
     /// <summary>
     /// Helper class to modify your entity mapping to document. Can be used instead attribute decorates
     /// </summary>
-    public class EntityBuilder<T>
+    public class EntityBuilder<T> : AppalachiaSimpleBase
     {
         private BsonMapper _mapper;
         private EntityMapper _entity;
@@ -100,7 +99,13 @@ namespace LiteDB
 
             if (memb == null)
             {
-                throw new ArgumentNullException($"Member '{member.GetPath()}' not found in type '{_entity.ForType.Name}' (use IncludeFields in BsonMapper)");
+                throw new ArgumentNullException(
+                    ZString.Format(
+                        "Member '{0}' not found in type '{1}' (use IncludeFields in BsonMapper)",
+                        member.GetPath(),
+                        _entity.ForType.Name
+                    )
+                );
             }
 
             action(memb);

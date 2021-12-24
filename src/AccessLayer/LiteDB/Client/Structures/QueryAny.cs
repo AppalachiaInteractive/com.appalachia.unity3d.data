@@ -1,8 +1,5 @@
-﻿using LiteDB.Engine;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using static LiteDB.Constants;
+﻿using System;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB
 {
@@ -15,7 +12,9 @@ namespace LiteDB
         {
             if (arrayField.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(arrayField));
 
-            return BsonExpression.Create($"{arrayField} ANY = {value ?? BsonValue.Null}");
+            return BsonExpression.Create(
+                ZString.Format("{0} ANY = {1}", arrayField, value ?? BsonValue.Null)
+            );
         }
 
         /// <summary>
@@ -25,7 +24,9 @@ namespace LiteDB
         {
             if (arrayField.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(arrayField));
 
-            return BsonExpression.Create($"{arrayField} ANY < {value ?? BsonValue.Null}");
+            return BsonExpression.Create(
+                ZString.Format("{0} ANY < {1}", arrayField, value ?? BsonValue.Null)
+            );
         }
 
         /// <summary>
@@ -35,7 +36,9 @@ namespace LiteDB
         {
             if (arrayField.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(arrayField));
 
-            return BsonExpression.Create($"{arrayField} ANY <= {value ?? BsonValue.Null}");
+            return BsonExpression.Create(
+                ZString.Format("{0} ANY <= {1}", arrayField, value ?? BsonValue.Null)
+            );
         }
 
         /// <summary>
@@ -45,7 +48,9 @@ namespace LiteDB
         {
             if (arrayField.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(arrayField));
 
-            return BsonExpression.Create($"{arrayField} ANY > {value ?? BsonValue.Null}");
+            return BsonExpression.Create(
+                ZString.Format("{0} ANY > {1}", arrayField, value ?? BsonValue.Null)
+            );
 
         }
 
@@ -56,7 +61,9 @@ namespace LiteDB
         {
             if (arrayField.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(arrayField));
 
-            return BsonExpression.Create($"{arrayField} ANY >= {value ?? BsonValue.Null}");
+            return BsonExpression.Create(
+                ZString.Format("{0} ANY >= {1}", arrayField, value ?? BsonValue.Null)
+            );
         }
 
         /// <summary>
@@ -66,7 +73,14 @@ namespace LiteDB
         {
             if (arrayField.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(arrayField));
 
-            return BsonExpression.Create($"{arrayField} ANY BETWEEN {start ?? BsonValue.Null} AND {end ?? BsonValue.Null}");
+            return BsonExpression.Create(
+                ZString.Format(
+                    "{0} ANY BETWEEN {1} AND {2}",
+                    arrayField,
+                    start ?? BsonValue.Null,
+                    end ?? BsonValue.Null
+                )
+            );
         }
 
         /// <summary>
@@ -77,7 +91,9 @@ namespace LiteDB
             if (arrayField.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(arrayField));
             if (value.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(value));
 
-            return BsonExpression.Create($"{arrayField} ANY LIKE {(new BsonValue(value + "%"))}");
+            return BsonExpression.Create(
+                ZString.Format("{0} ANY LIKE {1}", arrayField, new BsonValue(value + "%"))
+            );
         }
 
         /// <summary>
@@ -87,7 +103,9 @@ namespace LiteDB
         {
             if (arrayField.IsNullOrWhiteSpace()) throw new ArgumentNullException(nameof(arrayField));
 
-            return BsonExpression.Create($"{arrayField} ANY != {value ?? BsonValue.Null}");
+            return BsonExpression.Create(
+                ZString.Format("{0} ANY != {1}", arrayField, value ?? BsonValue.Null)
+            );
         }
     }
 }

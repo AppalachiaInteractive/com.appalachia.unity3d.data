@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using static LiteDB.Constants;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB
 {
@@ -271,7 +267,13 @@ namespace LiteDB
             }
             else
             {
-                throw new LiteException(0, $"Expression `{this.Source}` is not a scalar expression and can return more than one result");
+                throw new LiteException(
+                    0,
+                    ZString.Format(
+                        "Expression `{0}` is not a scalar expression and can return more than one result",
+                        Source
+                    )
+                );
             }
         }
 
@@ -457,7 +459,7 @@ namespace LiteDB
 
         public override string ToString()
         {
-            return $"`{this.Source}` [{this.Type}]";
+            return ZString.Format("`{0}` [{1}]", Source, Type);
         }
     }
 }

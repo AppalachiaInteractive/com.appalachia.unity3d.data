@@ -7,8 +7,8 @@ using Appalachia.Core.Aspects;
 using Appalachia.Data.Core;
 using Appalachia.Data.Core.AccessLayer;
 using Appalachia.Data.Core.Configuration;
-using Appalachia.Utility.Extensions;
 using Appalachia.Utility.Reflection.Extensions;
+using Appalachia.Utility.Strings;
 using Unity.Profiling;
 
 namespace Appalachia.Data.AccessLayer
@@ -34,7 +34,7 @@ namespace Appalachia.Data.AccessLayer
         {
             using (_PRF_CreateCollection.Auto())
             {
-                var fileName = $"{typeof(TC).GetSimpleReadableName()}.asset";
+                var fileName = ZString.Format("{0}.asset", typeof(TC).GetSimpleReadableName());
 
                 var subfolder = AppaPath.Combine(DataStorageDirectoryPath, "collections");
 
@@ -48,7 +48,7 @@ namespace Appalachia.Data.AccessLayer
         {
             using (_PRF_CreateDatabase.Auto())
             {
-                var fileName = $"{DataStorageFileNameWithoutExtension}.asset";
+                var fileName = ZString.Format("{0}.asset", DataStorageFileNameWithoutExtension);
 
                 var instance = AppalachiaObjectFactory.LoadExistingOrCreateNewAsset<TDB>(
                     fileName,
@@ -67,7 +67,7 @@ namespace Appalachia.Data.AccessLayer
 
                 var existing = AppaDirectory.GetFiles(subfolder).Length;
 
-                var fileName = $"{typeof(TD).GetSimpleReadableName()}-{existing}.asset";
+                var fileName = ZString.Format("{0}-{1}.asset", typeof(TD).GetSimpleReadableName(), existing);
 
                 var instance = AppalachiaObjectFactory.LoadExistingOrCreateNewAsset<TD>(fileName, subfolder);
 

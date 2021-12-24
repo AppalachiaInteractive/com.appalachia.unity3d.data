@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -534,7 +532,7 @@ namespace LiteDB.Engine
             ENSURE(_buffer.ShareCounter == BUFFER_WRITABLE, "page must be writable to support changes");
             ENSURE(this.HighestIndex < byte.MaxValue, "there is no items in this page to run defrag");
 
-            LOG($"defrag page #{this.PageID} (fragments: {this.FragmentedBytes})", "DISK");
+            LOG(ZString.Format("defrag page #{0} (fragments: {1})", PageID, FragmentedBytes), "DISK");
 
             // first get all segments inside this page sorted by position (position, index)
             var segments = new SortedList<ushort, byte>();
@@ -760,7 +758,12 @@ namespace LiteDB.Engine
 
         public override string ToString()
         {
-            return $"PageID: {this.PageID.ToString().PadLeft(4, '0')} : {this.PageType} ({this.ItemsCount} Items)";
+            return ZString.Format(
+                "PageID: {0} : {1} ({2} Items)",
+                PageID.ToString().PadLeft(4, '0'),
+                PageType,
+                ItemsCount
+            );
         }
     }
 }

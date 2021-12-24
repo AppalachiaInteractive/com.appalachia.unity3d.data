@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -65,7 +59,12 @@ namespace LiteDB.Engine
 
                 var keyLength = IndexNode.GetKeyLength(item.Key, false);
 
-                if (keyLength > MAX_INDEX_KEY_LENGTH) throw LiteException.InvalidIndexKey($"Sort key must be less than {MAX_INDEX_KEY_LENGTH} bytes.");
+                if (keyLength > MAX_INDEX_KEY_LENGTH)
+                {
+                    throw LiteException.InvalidIndexKey(
+                        ZString.Format("Sort key must be less than {0} bytes.", MAX_INDEX_KEY_LENGTH)
+                    );
+                }
 
                 offset += keyLength;
 

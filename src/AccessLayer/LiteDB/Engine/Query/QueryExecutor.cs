@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -123,7 +123,16 @@ namespace LiteDB.Engine
 
                         yield return doc;
 
-                        if (transaction.State != TransactionState.Active) throw new LiteException(0, $"There is no more active transaction for this cursor: {_cursor.Query.ToSQL(_cursor.Collection)}");
+                        if (transaction.State != TransactionState.Active)
+                        {
+                            throw new LiteException(
+                                0,
+                                ZString.Format(
+                                    "There is no more active transaction for this cursor: {0}",
+                                    _cursor.Query.ToSQL(_cursor.Collection)
+                                )
+                            );
+                        }
 
                         _cursor.Elapsed.Start();
                     }

@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -175,7 +169,7 @@ namespace LiteDB.Engine
                 return pragma.Get();
             }
 
-            throw new LiteException(0, $"Pragma `{name}` not exist");
+            throw new LiteException(0, ZString.Format("Pragma `{0}` not exist", name));
         }
 
         public void Set(string name, BsonValue value, bool validate)
@@ -191,7 +185,7 @@ namespace LiteDB.Engine
             }
             else
             {
-                throw new LiteException(0, $"Pragma `{name}` not exist");
+                throw new LiteException(0, ZString.Format("Pragma `{0}` not exist", name));
             }
         }
     }

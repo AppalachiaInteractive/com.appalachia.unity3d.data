@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using static LiteDB.Constants;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB
 {
@@ -162,7 +162,10 @@ namespace LiteDB
             catch (Exception)
             {
                 //TODO: fix string connection parser
-                throw new LiteException(0, $"Invalid connection string value type for `{key}`");
+                throw new LiteException(
+                    0,
+                    ZString.Format("Invalid connection string value type for `{0}`", key)
+                );
             }
         }
 

@@ -1,19 +1,19 @@
-using System;
 using System.Text;
 using Appalachia.CI.Constants;
 using Appalachia.CI.Integration.Assets;
 using Appalachia.CI.Integration.FileSystem;
-using Appalachia.Core.Attributes.Editing;
+using Appalachia.Core.Objects.Root;
 using Appalachia.Utility.Encryption;
-using Appalachia.Utility.Logging;
+using Appalachia.Utility.Strings;
 using Newtonsoft.Json;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
+using UnityEngine;
+using Random = System.Random;
 
 namespace Appalachia.Data.Core.Configuration
 {
-    [Serializable, SmartLabelChildren]
-    public class DatabaseConfigurationSettings
+    public class DatabaseConfigurationSettings : AppalachiaBase<DatabaseConfigurationSettings>
     {
         #region Constants and Static Readonly
 
@@ -24,6 +24,10 @@ namespace Appalachia.Data.Core.Configuration
         private const string DCS = "dcs";
 
         #endregion
+
+        public DatabaseConfigurationSettings(Object owner) : base(owner)
+        {
+        }
 
         #region Static Fields and Autoproperties
 
@@ -41,6 +45,8 @@ namespace Appalachia.Data.Core.Configuration
 
         #endregion
 
+        public override string Name => name;
+
         public static DatabaseConfigurationSettings Deserialize(string dataStoragePath)
         {
             using (_PRF_Deserialize.Auto())
@@ -48,10 +54,7 @@ namespace Appalachia.Data.Core.Configuration
                 var path = GetDCSPath(dataStoragePath, true);
 
                 var content = AppaFile.ReadAllText(path);
-                var cleanContent = AppaCipher.Decrypt(
-                    content,
-                    APPASTR.EncryptionKeys.DB_CONFIG_SETTINGS
-                );
+                var cleanContent = AppaCipher.Decrypt(content, APPASTR.EncryptionKeys.DB_CONFIG_SETTINGS);
                 var deserialized = JsonConvert.DeserializeObject<DatabaseConfigurationSettings>(cleanContent);
 
                 return deserialized;
@@ -61,7 +64,7 @@ namespace Appalachia.Data.Core.Configuration
         [ButtonGroup(APPASTR.Keys)]
         public void GenerateNewKey()
         {
-            Initialize();
+            InitializeStatic();
 
             var output = new StringBuilder(KEY_SIZE);
 
@@ -100,22 +103,24 @@ namespace Appalachia.Data.Core.Configuration
         {
             var plainTextJson = Serialize(false);
             var encryptedJson = Serialize(true);
-            var decryptedJson = AppaCipher.Decrypt(
-                encryptedJson,
-                APPASTR.EncryptionKeys.DB_CONFIG_SETTINGS
-            );
+            var decryptedJson = AppaCipher.Decrypt(encryptedJson, APPASTR.EncryptionKeys.DB_CONFIG_SETTINGS);
 
             var match = plainTextJson == decryptedJson;
 
-            var output =
-                $"Match: {match}\r\nOriginal: {plainTextJson}\r\nEncrypted: {encryptedJson}\r\nDecrypted: {decryptedJson}";
+            var output = ZString.Format(
+                "Match: {0}\r\nOriginal: {1}\r\nEncrypted: {2}\r\nDecrypted: {3}",
+                match,
+                plainTextJson,
+                encryptedJson,
+                decryptedJson
+            );
             if (match)
             {
-                AppaLog.Info(output);
+                Context.Log.Info(output);
             }
             else
             {
-                AppaLog.Error(output);
+                Context.Log.Error(output);
             }
         }
 
@@ -126,13 +131,13 @@ namespace Appalachia.Data.Core.Configuration
 
             if (encrypted)
             {
-                return AppaPath.Combine(directoryPath, $"{fileName}.{APPAEDCS}");
+                return AppaPath.Combine(directoryPath, ZString.Format("{0}.{1}", fileName, APPAEDCS));
             }
 
-            return AppaPath.Combine(directoryPath, $"{fileName}.{APPAUDCS}");
+            return AppaPath.Combine(directoryPath, ZString.Format("{0}.{1}", fileName, APPAUDCS));
         }
 
-        private static void Initialize()
+        private static void InitializeStatic()
         {
             _random ??= new Random();
             _chars ??= new[]
@@ -213,10 +218,7 @@ namespace Appalachia.Data.Core.Configuration
                     return serialized;
                 }
 
-                var encrypted = AppaCipher.Encrypt(
-                    serialized,
-                    APPASTR.EncryptionKeys.DB_CONFIG_SETTINGS
-                );
+                var encrypted = AppaCipher.Encrypt(serialized, APPASTR.EncryptionKeys.DB_CONFIG_SETTINGS);
 
                 return encrypted;
             }

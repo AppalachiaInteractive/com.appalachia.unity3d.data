@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -55,7 +56,9 @@ namespace LiteDB
             }
             else
             {
-                throw new NotSupportedException($"Expression {expr.ToString()} must be a lambda expression");
+                throw new NotSupportedException(
+                    ZString.Format("Expression {0} must be a lambda expression", expr)
+                );
             }
         }
 
@@ -83,7 +86,14 @@ namespace LiteDB
             }
             catch (Exception ex)
             {
-                throw new NotSupportedException($"Invalid BsonExpression when converted from Linq expression: {_expr.ToString()} - `{expression}`", ex);
+                throw new NotSupportedException(
+                    ZString.Format(
+                        "Invalid BsonExpression when converted from Linq expression: {0} - `{1}`",
+                        _expr,
+                        expression
+                    ),
+                    ex
+                );
             }
         }
 
@@ -138,7 +148,17 @@ namespace LiteDB
             {
                 var pattern = type.ResolveMember(member);
 
-                if (pattern == null) throw new NotSupportedException($"Member {member.Name} are not support in {member.DeclaringType.Name} when convert to BsonExpression ({node.ToString()}).");
+                if (pattern == null)
+                {
+                    throw new NotSupportedException(
+                        ZString.Format(
+                            "Member {0} are not support in {1} when convert to BsonExpression ({2}).",
+                            member.Name,
+                            member.DeclaringType.Name,
+                            node
+                        )
+                    );
+                }
 
                 this.ResolvePattern(pattern, node.Expression, new Expression[0]);
             }
@@ -191,11 +211,11 @@ namespace LiteDB
                 if (index is string)
                 {
                     _builder.Append(".");
-                    _builder.Append($"['{index}']");
+                    _builder.Append(ZString.Format("['{0}']", index));
                 }
                 else
                 {
-                    _builder.Append($"[{index}]");
+                    _builder.Append(ZString.Format("[{0}]", index));
                 }
 
                 return node;
@@ -207,7 +227,16 @@ namespace LiteDB
                 // if method are called by parameter expression and it's not exists, throw error
                 var isParam = ParameterExpressionVisitor.Test(node);
 
-                if (isParam) throw new NotSupportedException($"Method {node.Method.Name} not available to convert to BsonExpression ({node.ToString()}).");
+                if (isParam)
+                {
+                    throw new NotSupportedException(
+                        ZString.Format(
+                            "Method {0} not available to convert to BsonExpression ({1}).",
+                            node.Method.Name,
+                            node
+                        )
+                    );
+                }
 
                 // otherwise, try compile and execute
                 var value = this.Evaluate(node);
@@ -220,7 +249,17 @@ namespace LiteDB
             // otherwise I have resolver for this method
             var pattern = type.ResolveMethod(node.Method);
 
-            if (pattern == null) throw new NotSupportedException($"Method {Reflection.MethodName(node.Method)} in {node.Method.DeclaringType.Name} are not supported when convert to BsonExpression ({node.ToString()}).");
+            if (pattern == null)
+            {
+                throw new NotSupportedException(
+                    ZString.Format(
+                        "Method {0} in {1} are not supported when convert to BsonExpression ({2}).",
+                        Reflection.MethodName(node.Method),
+                        node.Method.DeclaringType.Name,
+                        node
+                    )
+                );
+            }
 
             // run pattern using object as # and args as @n
             this.ResolvePattern(pattern, node.Object, node.Arguments);
@@ -308,7 +347,15 @@ namespace LiteDB
                         .Where(x => x.GetParameters().Length == 1 && x.GetParameters().Any(z => z.ParameterType == fromType))
                         .FirstOrDefault();
 
-                    if (convert == null) throw new NotSupportedException($"Cast from {fromType.Name} are not supported when convert to BsonExpression");
+                    if (convert == null)
+                    {
+                        throw new NotSupportedException(
+                            ZString.Format(
+                                "Cast from {0} are not supported when convert to BsonExpression",
+                                fromType.Name
+                            )
+                        );
+                    }
 
                     var method = Expression.Call(null, convert, node.Operand);
 
@@ -344,13 +391,28 @@ namespace LiteDB
                 {
                     var pattern = type.ResolveCtor(node.Constructor);
 
-                    if (pattern == null) throw new NotSupportedException($"Constructor for {node.Type.Name} are not supported when convert to BsonExpression ({node.ToString()}).");
+                    if (pattern == null)
+                    {
+                        throw new NotSupportedException(
+                            ZString.Format(
+                                "Constructor for {0} are not supported when convert to BsonExpression ({1}).",
+                                node.Type.Name,
+                                node
+                            )
+                        );
+                    }
 
                     this.ResolvePattern(pattern, null, node.Arguments);
                 }
                 else
                 {
-                    throw new NotSupportedException($"New instance are not supported for {node.Type} when convert to BsonExpression ({node.ToString()}).");
+                    throw new NotSupportedException(
+                        ZString.Format(
+                            "New instance are not supported for {0} when convert to BsonExpression ({1}).",
+                            node.Type,
+                            node
+                        )
+                    );
                 }
             }
             else
@@ -379,7 +441,13 @@ namespace LiteDB
             // works only for empty ctor
             if (node.NewExpression.Constructor.GetParameters().Length > 0)
             {
-                throw new NotSupportedException($"New instance of {node.Type} are not supported because contains ctor with parameter. Try use only property initializers: `new {node.Type.Name} {{ PropA = 1, PropB == \"John\" }}`.");
+                throw new NotSupportedException(
+                    ZString.Format(
+                        "New instance of {0} are not supported because contains ctor with parameter. Try use only property initializers: `new {1} {{ PropA = 1, PropB == \"John\" }}`.",
+                        node.Type,
+                        node.Type.Name
+                    )
+                );
             }
 
             _builder.Append("{");
@@ -563,13 +631,26 @@ namespace LiteDB
                 // if not found in resolver, try run method
                 if (!this.TryGetResolver(met.Method.DeclaringType, out var type))
                 {
-                    throw new NotSupportedException($"Method {met.Method.Name} not available to convert to BsonExpression inside Any/All call.");
+                    throw new NotSupportedException(
+                        ZString.Format(
+                            "Method {0} not available to convert to BsonExpression inside Any/All call.",
+                            met.Method.Name
+                        )
+                    );
                 }
 
                 // otherwise I have resolver for this method
                 var pattern = type.ResolveMethod(met.Method);
 
-                if (pattern == null || !pattern.StartsWith("#")) throw new NotSupportedException($"Method {met.Method.Name} not available to convert to BsonExpression inside Any/All call.");
+                if ((pattern == null) || !pattern.StartsWith("#"))
+                {
+                    throw new NotSupportedException(
+                        ZString.Format(
+                            "Method {0} not available to convert to BsonExpression inside Any/All call.",
+                            met.Method.Name
+                        )
+                    );
+                }
 
                 // call resolve pattern removing first `#`
                 this.ResolvePattern(pattern.Substring(1), met.Object, met.Arguments);
@@ -604,7 +685,7 @@ namespace LiteDB
                 case ExpressionType.OrElse: return " OR ";
             }
 
-            throw new NotSupportedException($"Operator not supported {nodeType}");
+            throw new NotSupportedException(ZString.Format("Operator not supported {0}", nodeType));
         }
 
         /// <summary>
@@ -623,7 +704,16 @@ namespace LiteDB
             // get mapped field from entity
             var field = entity.Members.FirstOrDefault(x => x.MemberName == name);
 
-            if (field == null) throw new NotSupportedException($"Member {name} not found on BsonMapper for type {member.DeclaringType}.");
+            if (field == null)
+            {
+                throw new NotSupportedException(
+                    ZString.Format(
+                        "Member {0} not found on BsonMapper for type {1}.",
+                        name,
+                        member.DeclaringType
+                    )
+                );
+            }
 
             // define if this field are DbRef (child will need check parent)
             _dbRefType = field.IsDbRef ? field.UnderlyingType : null;
@@ -711,12 +801,20 @@ namespace LiteDB
             // do some type validation to be ease to debug
             if (validTypes.Length > 0 && value == null)
             {
-                throw new NotSupportedException($"Expression {expr} can't return null value");
+                throw new NotSupportedException(
+                    ZString.Format("Expression {0} can't return null value", expr)
+                );
             }
 
             if (validTypes.Length > 0 && validTypes.Any(x => x == value.GetType()) == false)
             {
-                throw new NotSupportedException($"Expression {expr} must return on of this types: {string.Join(", ", validTypes.Select(x => $"`{x.Name}`"))}");
+                throw new NotSupportedException(
+                    ZString.Format(
+                        "Expression {0} must return on of this types: {1}",
+                        expr,
+                        string.Join(", ", validTypes.Select(x => ZString.Format("`{0}`", x.Name)))
+                    )
+                );
             }
 
             return value;

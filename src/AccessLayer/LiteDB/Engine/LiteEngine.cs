@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -62,7 +59,7 @@ namespace LiteDB.Engine
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
-            LOG($"start initializing{(_settings.ReadOnly ? " (readonly)" : "")}", "ENGINE");
+            LOG(ZString.Format("start initializing{0}", _settings.ReadOnly ? " (readonly)" : ""), "ENGINE");
 
             try
             {
@@ -80,7 +77,13 @@ namespace LiteDB.Engine
                 // test for same collation
                 if (settings.Collation != null && settings.Collation.ToString() != _header.Pragmas.Collation.ToString())
                 {
-                    throw new LiteException(0, $"Datafile collation '{_header.Pragmas.Collation}' is different from engine settings. Use Rebuild database to change collation.");
+                    throw new LiteException(
+                        0,
+                        ZString.Format(
+                            "Datafile collation '{0}' is different from engine settings. Use Rebuild database to change collation.",
+                            _header.Pragmas.Collation
+                        )
+                    );
                 }
 
                 // initialize locker service

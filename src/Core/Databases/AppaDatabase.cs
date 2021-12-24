@@ -2,7 +2,6 @@ using System;
 using Appalachia.Data.Core.AccessLayer;
 using Appalachia.Data.Core.Collections;
 using Appalachia.Data.Core.Documents;
-using Appalachia.Utility.Logging;
 using Newtonsoft.Json;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
@@ -42,7 +41,7 @@ namespace Appalachia.Data.Core.Databases
 
                 if (collectionType.Name != (documentType.Name + "Collection"))
                 {
-                    AppaLog.Error("The collection name must match the document type name!");
+                    Context.Log.Error("The collection name must match the document type name!");
                 }
 #endif
 
@@ -59,8 +58,6 @@ namespace Appalachia.Data.Core.Databases
         {
             using (_PRF_Save.Auto())
             {
-                InitializeInternal();
-
                 Access.SaveDatabase(this as TDB);
             }
         }
@@ -87,7 +84,7 @@ namespace Appalachia.Data.Core.Databases
                 var instance = access.CreateDatabase<TDB>();
 
                 instance._access = access;
-                instance.InitializeInternal();
+                instance.InitializeSynchronous();
 
                 return instance;
             }

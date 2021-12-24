@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using static LiteDB.Constants;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB.Engine
 {
@@ -18,7 +18,10 @@ namespace LiteDB.Engine
                 return sys;
             }
 
-            throw new LiteException(0, $"System collection '{name}' are not registered as system collection");
+            throw new LiteException(
+                0,
+                ZString.Format("System collection '{0}' are not registered as system collection", name)
+            );
         }
 
         /// <summary>

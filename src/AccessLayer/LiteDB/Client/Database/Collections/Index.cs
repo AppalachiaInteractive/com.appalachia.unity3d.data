@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
-using static LiteDB.Constants;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB
 {
@@ -80,7 +78,13 @@ namespace LiteDB
                 }
                 else
                 {
-                    throw new LiteException(0, $"Expression `{expression.Source}` must return a enumerable expression");
+                    throw new LiteException(
+                        0,
+                        ZString.Format(
+                            "Expression `{0}` must return a enumerable expression",
+                            expression.Source
+                        )
+                    );
                 }
             }
 

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -232,7 +230,7 @@ namespace LiteDB
         private void WriteExtendDataType(string type, string value)
         {
             // format: { "$type": "string-value" }
-            // no string.Format to better performance
+            // no ZString.Format to better performance
             _writer.Write("{\"");
             _writer.Write(type);
             _writer.Write("\":");

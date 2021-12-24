@@ -1,5 +1,4 @@
-﻿using System;
-using static LiteDB.Constants;
+﻿using Appalachia.Utility.Strings;
 
 namespace LiteDB.Engine
 {
@@ -95,7 +94,13 @@ namespace LiteDB.Engine
 
         public override string ToString()
         {
-            return $"Pos: [{this.Position}] - Ext: [{this.Extend}] - Next: [{this.NextBlock}] - Buffer: [{this.Buffer}]";
+            return ZString.Format(
+                "Pos: [{0}] - Ext: [{1}] - Next: [{2}] - Buffer: [{3}]",
+                Position,
+                Extend,
+                NextBlock,
+                Buffer
+            );
         }
     }
 }

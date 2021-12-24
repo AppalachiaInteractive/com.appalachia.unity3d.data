@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -342,7 +340,16 @@ namespace LiteDB.Engine
                     // checks if not exceeded data file limit size
                     var newLength = (_header.LastPageID + 1) * PAGE_SIZE;
 
-                    if (newLength > _header.Pragmas.LimitSize) throw new LiteException(0, $"Maximum data file size has been reached: {FileHelper.FormatFileSize(_header.Pragmas.LimitSize)}");
+                    if (newLength > _header.Pragmas.LimitSize)
+                    {
+                        throw new LiteException(
+                            0,
+                            ZString.Format(
+                                "Maximum data file size has been reached: {0}",
+                                FileHelper.FormatFileSize(_header.Pragmas.LimitSize)
+                            )
+                        );
+                    }
 
                     // increase LastPageID from shared page
                     pageID = ++_header.LastPageID;
@@ -629,7 +636,7 @@ namespace LiteDB.Engine
 
         public override string ToString()
         {
-            return $"{_collectionName} (pages: {_localPages.Count})";
+            return ZString.Format("{0} (pages: {1})", _collectionName, _localPages.Count);
         }
     }
 }

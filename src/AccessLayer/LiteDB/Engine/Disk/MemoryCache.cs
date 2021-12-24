@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -345,7 +340,7 @@ namespace LiteDB.Engine
                     }
                 }
 
-                LOG($"re-using cache pages (flushing {_free.Count} pages)", "CACHE");
+                LOG(ZString.Format("re-using cache pages (flushing {0} pages)", _free.Count), "CACHE");
             }
             else
             {
@@ -362,7 +357,7 @@ namespace LiteDB.Engine
 
                 _extends++;
 
-                LOG($"extending memory usage: (segments: {_extends})", "CACHE");
+                LOG(ZString.Format("extending memory usage: (segments: {0})", _extends), "CACHE");
             }
         }
 

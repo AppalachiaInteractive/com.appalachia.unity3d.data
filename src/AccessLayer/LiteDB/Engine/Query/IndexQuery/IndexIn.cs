@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using static LiteDB.Constants;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB.Engine
 {
@@ -40,7 +39,7 @@ namespace LiteDB.Engine
 
         public override string ToString()
         {
-            return string.Format("INDEX SEEK({0} IN {1})", this.Name, JsonSerializer.Serialize(_values));
+            return ZString.Format("INDEX SEEK({0} IN {1})", Name, JsonSerializer.Serialize(_values));
         }
     }
 }

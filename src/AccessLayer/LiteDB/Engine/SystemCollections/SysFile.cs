@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using static LiteDB.Constants;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB.Engine
 {
@@ -29,7 +26,7 @@ namespace LiteDB.Engine
                 return factory.Input(options);
             }
 
-            throw new LiteException(0, $"Unknow file format in $file: `{format}`");
+            throw new LiteException(0, ZString.Format("Unknow file format in $file: `{0}`", format));
         }
 
         public override int Output(IEnumerable<BsonDocument> source, BsonValue options)
@@ -41,7 +38,7 @@ namespace LiteDB.Engine
                 return factory.Output(source, options);
             }
 
-            throw new LiteException(0, $"Unknow file format in $file: `{format}`");
+            throw new LiteException(0, ZString.Format("Unknow file format in $file: `{0}`", format));
         }
 
         private string GetFormat(BsonValue options)

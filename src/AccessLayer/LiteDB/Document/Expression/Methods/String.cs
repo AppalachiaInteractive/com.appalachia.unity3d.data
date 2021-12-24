@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using System.Text.RegularExpressions;
-using static LiteDB.Constants;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB
 {
@@ -225,7 +222,7 @@ namespace LiteDB
         {
             if (format.IsString)
             {
-                return string.Format("{0:" +  format.AsString + "}", value.RawValue);
+                return ZString.Format("{0:" + format.AsString + "}", value.RawValue);
             }
 
             return BsonValue.Null;

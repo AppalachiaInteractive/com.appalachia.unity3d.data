@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -61,14 +61,23 @@ namespace LiteDB.Engine
 
         public BsonDocument Load(PageAddress rawId)
         {
-            if (_cache == null) throw new LiteException(0, $"OrderBy/GroupBy operation are supported only in virtual collection with less than {VIRTUAL_INDEX_MAX_CACHE} documents");
+            if (_cache == null)
+            {
+                throw new LiteException(
+                    0,
+                    ZString.Format(
+                        "OrderBy/GroupBy operation are supported only in virtual collection with less than {0} documents",
+                        VIRTUAL_INDEX_MAX_CACHE
+                    )
+                );
+            }
 
             return _cache[rawId.PageID];
         }
 
         public override string ToString()
         {
-            return string.Format("FULL COLLECTION SCAN");
+            return ZString.Format("FULL COLLECTION SCAN");
         }
     }
 }

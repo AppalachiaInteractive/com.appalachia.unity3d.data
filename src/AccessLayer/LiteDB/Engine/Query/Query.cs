@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using static LiteDB.Constants;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB
 {
@@ -55,48 +53,52 @@ namespace LiteDB
                 sb.AppendLine("EXPLAIN");
             }
 
-            sb.AppendLine($"SELECT {this.Select.Source}");
+            sb.AppendLine(ZString.Format("SELECT {0}", Select.Source));
 
             if (this.Into != null)
             {
-                sb.AppendLine($"INTO {this.Into}:{IntoAutoId.ToString().ToLower()}");
+                sb.AppendLine(ZString.Format("INTO {0}:{1}", Into, IntoAutoId.ToString().ToLower()));
             }
 
-            sb.AppendLine($"FROM {collection}");
+            sb.AppendLine(ZString.Format("FROM {0}", collection));
 
             if (this.Includes.Count > 0)
             {
-                sb.AppendLine($"INCLUDE {string.Join(", ", this.Includes.Select(x => x.Source))}");
+                sb.AppendLine(
+                    ZString.Format("INCLUDE {0}", string.Join(", ", Includes.Select(x => x.Source)))
+                );
             }
 
             if (this.Where.Count > 0)
             {
-                sb.AppendLine($"WHERE {string.Join(" AND ", this.Where.Select(x => x.Source))}");
+                sb.AppendLine(ZString.Format("WHERE {0}", string.Join(" AND ", Where.Select(x => x.Source))));
             }
 
             if (this.GroupBy != null)
             {
-                sb.AppendLine($"GROUP BY {this.GroupBy.Source}");
+                sb.AppendLine(ZString.Format("GROUP BY {0}", GroupBy.Source));
             }
 
             if (this.Having != null)
             {
-                sb.AppendLine($"HAVING {this.Having.Source}");
+                sb.AppendLine(ZString.Format("HAVING {0}", Having.Source));
             }
 
             if (this.OrderBy != null)
             {
-                sb.AppendLine($"ORDER BY {this.OrderBy.Source} {(this.Order == Query.Ascending ? "ASC" : "DESC")}");
+                sb.AppendLine(
+                    ZString.Format("ORDER BY {0} {1}", OrderBy.Source, Order == Ascending ? "ASC" : "DESC")
+                );
             }
 
             if (this.Limit != int.MaxValue)
             {
-                sb.AppendLine($"LIMIT {this.Limit}");
+                sb.AppendLine(ZString.Format("LIMIT {0}", Limit));
             }
 
             if (this.Offset != 0)
             {
-                sb.AppendLine($"OFFSET {this.Offset}");
+                sb.AppendLine(ZString.Format("OFFSET {0}", Offset));
             }
 
             if (this.ForUpdate)

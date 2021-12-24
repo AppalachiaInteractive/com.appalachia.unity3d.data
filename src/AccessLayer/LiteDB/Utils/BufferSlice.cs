@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -124,7 +117,7 @@ namespace LiteDB
 
         public override string ToString()
         {
-            return $"Offset: {this.Offset} - Count: {this.Count}";
+            return ZString.Format("Offset: {0} - Count: {1}", Offset, Count);
         }
     }
 }

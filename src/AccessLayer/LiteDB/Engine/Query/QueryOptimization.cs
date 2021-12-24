@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -81,7 +82,10 @@ namespace LiteDB.Engine
                 // do not accept source * in WHERE
                 if (predicate.UseSource)
                 {
-                    throw new LiteException(0, $"WHERE filter can not use `*` expression in `{predicate.Source}");
+                    throw new LiteException(
+                        0,
+                        ZString.Format("WHERE filter can not use `*` expression in `{0}", predicate.Source)
+                    );
                 }
 
                 // add expression in where list breaking AND statments

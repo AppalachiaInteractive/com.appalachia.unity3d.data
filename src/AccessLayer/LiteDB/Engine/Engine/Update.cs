@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -25,7 +26,7 @@ namespace LiteDB.Engine
 
                 if (collectionPage == null) return 0;
 
-                LOG($"update `{collection}`", "COMMAND");
+                LOG(ZString.Format("update `{0}`", collection), "COMMAND");
 
                 foreach (var doc in docs)
                 {

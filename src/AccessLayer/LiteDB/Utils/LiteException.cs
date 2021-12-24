@@ -1,8 +1,8 @@
-﻿using LiteDB.Engine;
-using System;
+﻿using System;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
+using Appalachia.Utility.Strings;
+using LiteDB.Engine;
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -65,14 +65,17 @@ namespace LiteDB
             this.ErrorCode = code;
         }
 
-        internal LiteException(int code, string message, params object[] args)
-            : base(string.Format(message, args))
+        internal LiteException(int code, string message, params object[] args) : base(
+            ZString.Format(message, args)
+        )
         {
             this.ErrorCode = code;
         }
 
-        internal LiteException (int code, Exception inner, string message, params object[] args)
-        : base (string.Format (message, args), inner)
+        internal LiteException (int code, Exception inner, string message, params object[] args) : base(
+            ZString.Format(message, args),
+            inner
+        )
         {
             this.ErrorCode = code;
         }
@@ -235,9 +238,12 @@ namespace LiteDB
         {
             var position = (token?.Position - (token?.Value?.Length ?? 0)) ?? 0;
             var str = token?.Type == TokenType.EOF ? "[EOF]" : token?.Value ?? "";
-            var exp = expected == null ? "" : $" Expected `{expected}`.";
+            var exp = expected == null ? "" : ZString.Format(" Expected `{0}`.", expected);
 
-            return new LiteException(UNEXPECTED_TOKEN, $"Unexpected token `{str}` in position {position}.{exp}")
+            return new LiteException(
+                UNEXPECTED_TOKEN,
+                ZString.Format("Unexpected token `{0}` in position {1}.{2}", str, position, exp)
+            )
             {
                 Position = position
             };
@@ -290,20 +296,28 @@ namespace LiteDB
 
         internal static LiteException InvalidPageType(PageType pageType, BasePage page)
         {
-            var sb = new StringBuilder($"Invalid {pageType} on {page.PageID}. ");
+            var sb = new StringBuilder(ZString.Format("Invalid {0} on {1}. ", pageType, page.PageID));
 
-            sb.Append($"Full zero: {page.Buffer.All(0)}. ");
-            sb.Append($"Page Type: {page.PageType}. ");
-            sb.Append($"Prev/Next: {page.PrevPageID}/{page.NextPageID}. ");
-            sb.Append($"UniqueID: {page.Buffer.UniqueID}. ");
-            sb.Append($"ShareCounter: {page.Buffer.ShareCounter}. ");
+            sb.Append(ZString.Format("Full zero: {0}. ",     page.Buffer.All(0)));
+            sb.Append(ZString.Format("Page Type: {0}. ",     page.PageType));
+            sb.Append(ZString.Format("Prev/Next: {0}/{1}. ", page.PrevPageID, page.NextPageID));
+            sb.Append(ZString.Format("UniqueID: {0}. ",      page.Buffer.UniqueID));
+            sb.Append(ZString.Format("ShareCounter: {0}. ",  page.Buffer.ShareCounter));
 
             return new LiteException(0, sb.ToString());
         }
 
         internal static LiteException InvalidFreeSpacePage(uint pageID, int freeBytes, int length)
         {
-            return new LiteException(INVALID_FREE_SPACE_PAGE, $"An operation that would corrupt page {pageID} was prevented. The operation required {length} free bytes, but the page had only {freeBytes} available.");
+            return new LiteException(
+                INVALID_FREE_SPACE_PAGE,
+                ZString.Format(
+                    "An operation that would corrupt page {0} was prevented. The operation required {1} free bytes, but the page had only {2} available.",
+                    pageID,
+                    length,
+                    freeBytes
+                )
+            );
         }
 
         #endregion

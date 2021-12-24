@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Security;
 using System.Threading;
-using static LiteDB.Constants;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB
 {
@@ -126,7 +125,16 @@ namespace LiteDB
         private static byte[] FromHex(string value)
         {
             if (string.IsNullOrEmpty(value)) throw new ArgumentNullException(nameof(value));
-            if (value.Length != 24) throw new ArgumentException(string.Format("ObjectId strings should be 24 hex characters, got {0} : \"{1}\"", value.Length, value));
+            if (value.Length != 24)
+            {
+                throw new ArgumentException(
+                    ZString.Format(
+                        "ObjectId strings should be 24 hex characters, got {0} : \"{1}\"",
+                        value.Length,
+                        value
+                    )
+                );
+            }
 
             var bytes = new byte[12];
 

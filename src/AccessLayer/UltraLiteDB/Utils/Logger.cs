@@ -1,4 +1,5 @@
 ﻿using System;
+using Appalachia.Utility.Strings;
 
 namespace UltraLiteDB
 {
@@ -66,7 +67,7 @@ namespace UltraLiteDB
 
             if (this.Logging != null)
             {
-                var text = string.Format(message, args);
+                var text = ZString.Format(message, args);
 
                 var str =
                     level == ERROR ? "ERROR" :

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using static LiteDB.Constants;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB.Engine
 {
@@ -29,7 +26,15 @@ namespace LiteDB.Engine
                 // if lastId is not number, throw exception
                 if (!lastId.IsNumber)
                 {
-                    throw new LiteException(0, $"It's not possible use AutoId={autoId} because '{snapshot.CollectionName}' collection contains not only numbers in _id index ({lastId}).");
+                    throw new LiteException(
+                        0,
+                        ZString.Format(
+                            "It's not possible use AutoId={0} because '{1}' collection contains not only numbers in _id index ({2}).",
+                            autoId,
+                            snapshot.CollectionName,
+                            lastId
+                        )
+                    );
                 }
 
                 // return nextId

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -30,7 +29,12 @@ namespace LiteDB.Engine
 
                 ["currentReadVersion"] = _walIndex.CurrentReadVersion,
                 ["lastTransactionID"] = _walIndex.LastTransactionID,
-                ["engine"] = $"litedb-ce-v{version.Major}.{version.Minor}.{version.Build}",
+                ["engine"] = ZString.Format(
+                    "litedb-ce-v{0}.{1}.{2}",
+                    version.Major,
+                    version.Minor,
+                    version.Build
+                ),
 
                 ["pragmas"] = new BsonDocument(_header.Pragmas.Pragmas.ToDictionary(x => x.Name, x => x.Get())),
 

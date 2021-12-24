@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -228,7 +226,7 @@ namespace LiteDB.Engine
 
         public override string ToString()
         {
-            return $"Pos: [{this.Position}] - Key: {this.Key}";
+            return ZString.Format("Pos: [{0}] - Key: {1}", Position, Key);
         }
     }
 }

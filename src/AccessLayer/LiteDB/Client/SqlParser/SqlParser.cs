@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+using Appalachia.Utility.Strings;
 using LiteDB.Engine;
 using static LiteDB.Constants;
 
@@ -29,7 +27,7 @@ namespace LiteDB
         {
             var ahead = _tokenizer.LookAhead().Expect(TokenType.Word);
 
-            LOG($"executing `{ahead.Value.ToUpper()}`", "SQL");
+            LOG(ZString.Format("executing `{0}`", ahead.Value.ToUpper()), "SQL");
 
             switch (ahead.Value.ToUpper())
             {

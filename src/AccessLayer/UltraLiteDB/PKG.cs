@@ -16,8 +16,8 @@ using Appalachia.Utility.Constants;
 [assembly: AssemblyTrademark("Keepers Of Creation")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en")]
-[assembly: AssemblyVersion("0.1.0.0")]
-[assembly: AssemblyFileVersion("0.1.0.0")]
+[assembly: AssemblyVersion("0.2.0.0")]
+[assembly: AssemblyFileVersion("0.2.0.0")]
 
 namespace Appalachia.Data.AccessLayer.UltraLiteDB
 {
@@ -31,15 +31,15 @@ namespace Appalachia.Data.AccessLayer.UltraLiteDB
         public const string AssemblyTrademark = "Keepers Of Creation";
         public const string AssemblyCulture = "";
         public const string NeutralResourcesLanguage = "en";
-        public const string AssemblyVersion = "0.1.0.0";
-        public const string AssemblyFileVersion = "0.1.0.0";
-        public const int Priority = -384000;
+        public const string AssemblyVersion = "0.2.0.0";
+        public const string AssemblyFileVersion = "0.2.0.0";
+        public const int Priority = -375000;
         public const string Name = "Data/AccessLayer/UltraLiteDB";
         public const string Prefix = Root + Name + "/";
         public const string Root = "Appalachia/";
-        public const string Version = "0.1.0";
-        public const int VersionInt = 1000;
-        public const string BuildDate = "2021-11-19T00:01:27.1037609Z";
+        public const string Version = "0.2.0";
+        public const int VersionInt = 2000;
+        public const string BuildDate = "2021-12-21T00:29:23.3902782Z";
         
         public static partial class Prefs
         {

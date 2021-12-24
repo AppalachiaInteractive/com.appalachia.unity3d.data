@@ -1,10 +1,7 @@
-﻿using LiteDB.Engine;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -242,7 +239,13 @@ namespace LiteDB
             // SELECT COUNT(*), $.pageID FROM $page_list IS invalid!
             if (value == null)
             {
-                throw new LiteException(0, $"Field '{name}' is invalid in the select list because it is not contained in either an aggregate function or the GROUP BY clause.");
+                throw new LiteException(
+                    0,
+                    ZString.Format(
+                        "Field '{0}' is invalid in the select list because it is not contained in either an aggregate function or the GROUP BY clause.",
+                        name
+                    )
+                );
             }
 
             if (string.IsNullOrEmpty(name))

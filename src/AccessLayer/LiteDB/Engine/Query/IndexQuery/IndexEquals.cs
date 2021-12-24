@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using static LiteDB.Constants;
+﻿using System.Collections.Generic;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB.Engine
 {
@@ -60,7 +58,7 @@ namespace LiteDB.Engine
 
         public override string ToString()
         {
-            return string.Format("INDEX SEEK({0} = {1})", this.Name, _value);
+            return ZString.Format("INDEX SEEK({0} = {1})", Name, _value);
         }
     }
 }

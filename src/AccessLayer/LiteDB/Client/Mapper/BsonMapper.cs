@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Appalachia.Data.Core.Attributes;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB
@@ -180,7 +181,7 @@ namespace LiteDB
 
             var expr = visitor.Resolve(typeof(K) == typeof(bool));
 
-            LOG($"`{predicate.ToString()}` -> `{expr.Source}`", "LINQ");
+            LOG(ZString.Format("`{0}` -> `{1}`", predicate, expr.Source), "LINQ");
 
             return expr;
         }
@@ -194,7 +195,7 @@ namespace LiteDB
 
             var expr = visitor.Resolve(false);
 
-            LOG($"`{predicate.ToString()}` -> `{expr.Source}`", "LINQ");
+            LOG(ZString.Format("`{0}` -> `{1}`", predicate, expr.Source), "LINQ");
 
             return expr;
         }

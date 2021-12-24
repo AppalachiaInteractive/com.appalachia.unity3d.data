@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using static LiteDB.Constants;
+using Appalachia.Utility.Strings;
 
 namespace LiteDB.Engine
 {
@@ -32,7 +32,7 @@ namespace LiteDB.Engine
 
         public override string ToString()
         {
-            return string.Format("FULL INDEX SCAN({0})", this.Name);
+            return ZString.Format("FULL INDEX SCAN({0})", Name);
         }
     }
 }

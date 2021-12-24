@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
@@ -24,7 +25,7 @@ namespace LiteDB.Engine
 
                 if (collectionPage == null) return 0;
 
-                LOG($"delete `{collection}`", "COMMAND");
+                LOG(ZString.Format("delete `{0}`", collection), "COMMAND");
 
                 var count = 0;
                 var pk = collectionPage.PK;
