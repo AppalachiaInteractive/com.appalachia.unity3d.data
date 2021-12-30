@@ -65,7 +65,7 @@ namespace LiteDB.Engine
             {
                 throw new LiteException(
                     0,
-                    ZString.Format(
+                    string.Format(
                         "OrderBy/GroupBy operation are supported only in virtual collection with less than {0} documents",
                         VIRTUAL_INDEX_MAX_CACHE
                     )
@@ -77,7 +77,7 @@ namespace LiteDB.Engine
 
         public override string ToString()
         {
-            return ZString.Format("FULL COLLECTION SCAN");
+            return string.Format("FULL COLLECTION SCAN");
         }
     }
 }

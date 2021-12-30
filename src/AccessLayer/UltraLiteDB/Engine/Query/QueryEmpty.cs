@@ -28,7 +28,7 @@ namespace UltraLiteDB
 
         public override string ToString()
         {
-            return ZString.Format("(false)");
+            return string.Format("(false)");
         }
     }
 }
