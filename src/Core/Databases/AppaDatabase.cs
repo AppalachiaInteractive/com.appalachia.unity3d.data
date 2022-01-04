@@ -77,9 +77,9 @@ namespace Appalachia.Data.Core.Databases
             _access.SaveDatabase(database);
         }
 
-        protected static TDB CreateDatabase(DatabaseAccess access)
+        protected static TDB InitializeDatabase(DatabaseAccess access)
         {
-            using (_PRF_CreateDatabase.Auto())
+            using (_PRF_InitializeDatabase.Auto())
             {
                 var instance = access.CreateDatabase<TDB>();
 
@@ -135,8 +135,8 @@ namespace Appalachia.Data.Core.Databases
 
         private static readonly ProfilerMarker _PRF_Save = new ProfilerMarker(_PRF_PFX + nameof(Save));
 
-        private static readonly ProfilerMarker _PRF_CreateDatabase =
-            new ProfilerMarker(_PRF_PFX + nameof(CreateDatabase));
+        private static readonly ProfilerMarker _PRF_InitializeDatabase =
+            new ProfilerMarker(_PRF_PFX + nameof(InitializeDatabase));
 
         #endregion
     }
