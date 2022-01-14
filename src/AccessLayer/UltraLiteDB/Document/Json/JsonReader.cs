@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
-
 namespace UltraLiteDB
 {
     /// <summary>
@@ -11,7 +10,7 @@ namespace UltraLiteDB
     /// </summary>
     public class JsonReader
     {
-        private readonly static IFormatProvider _numberFormat = CultureInfo.InvariantCulture.NumberFormat;
+        private static readonly IFormatProvider _numberFormat = CultureInfo.InvariantCulture.NumberFormat;
 
         private Tokenizer _tokenizer = null;
 

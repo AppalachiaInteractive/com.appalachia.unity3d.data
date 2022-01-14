@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Appalachia.Core.Objects.Initialization;
-using Appalachia.Data.Core.Collections;
+using Appalachia.Data.Core.Contracts;
 using Appalachia.Utility.Async;
 using Newtonsoft.Json;
 using Sirenix.OdinInspector;
@@ -10,20 +10,15 @@ using Unity.Profiling;
 namespace Appalachia.Data.Core.Databases
 {
     [Serializable]
-    public abstract class AppaDatabaseBase : DataObject, IDisposable
+    public abstract class AppaDatabaseBase<T> : DataObject<T>, IDisposable, IAppaDatabase
+        where T : AppaDatabaseBase<T>
     {
         #region Fields and Autoproperties
 
         [NonSerialized, JsonProperty]
-        protected List<AppaCollectionBase> _collections;
+        protected List<IAppaCollection> _collections;
 
         #endregion
-
-        [ShowInInspector, JsonIgnore]
-        public abstract DatabaseType Type { get; }
-
-        [ShowInInspector, BoxGroup(nameof(Collections))]
-        public IReadOnlyList<AppaCollectionBase> Collections => _collections;
 
         protected virtual void Dispose(bool disposing)
         {
@@ -37,18 +32,34 @@ namespace Appalachia.Data.Core.Databases
 
         protected override async AppaTask Initialize(Initializer initializer)
         {
+            await base.Initialize(initializer);
+
             using (_PRF_Initialize.Auto())
             {
-                await base.Initialize(initializer);
-
-                await initializer.Do(
+                initializer.Do(
                     this,
-                    nameof(AppaCollectionBase),
+                    nameof(_collections),
                     Initializer.TagState.NonSerialized,
-                    () => { _collections = new List<AppaCollectionBase>(); }
+                    () =>
+                    {
+                        using (_PRF_Initialize.Auto())
+                        {
+                            _collections = new List<IAppaCollection>();
+                        }
+                    }
                 );
             }
         }
+
+        #region IAppaDatabase Members
+
+        [ShowInInspector, JsonIgnore]
+        public abstract DatabaseType Type { get; }
+
+        [ShowInInspector, BoxGroup(nameof(Collections))]
+        public IReadOnlyList<IAppaCollection> Collections => _collections;
+
+        #endregion
 
         #region IDisposable Members
 
@@ -64,14 +75,6 @@ namespace Appalachia.Data.Core.Databases
         #endregion
 
         #region Profiling
-
-        private const string _PRF_PFX = nameof(AppaDatabaseBase) + ".";
-
-        private static readonly ProfilerMarker _PRF_Initialize =
-            new ProfilerMarker(_PRF_PFX + nameof(Initialize));
-
-        private static readonly ProfilerMarker
-            _PRF_OnEnable = new ProfilerMarker(_PRF_PFX + nameof(OnEnable));
 
         private static readonly ProfilerMarker _PRF_Dispose = new ProfilerMarker(_PRF_PFX + nameof(Dispose));
 

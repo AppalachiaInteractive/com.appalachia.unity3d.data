@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
@@ -11,7 +10,7 @@ namespace LiteDB
     /// </summary>
     public class JsonReader
     {
-        private readonly static IFormatProvider _numberFormat = CultureInfo.InvariantCulture.NumberFormat;
+        private static readonly IFormatProvider _numberFormat = CultureInfo.InvariantCulture.NumberFormat;
 
         private Tokenizer _tokenizer = null;
 

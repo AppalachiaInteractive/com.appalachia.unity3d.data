@@ -1,14 +1,15 @@
 using System;
 using Appalachia.CI.Integration.Attributes;
 using Appalachia.Data.Core.Attributes;
-using Appalachia.Utility.Extensions;
+using Appalachia.Data.Core.Contracts;
 using Unity.Profiling;
 using UnityEngine;
 
 namespace Appalachia.Data.Core.Documents
 {
     [DoNotReorderFields, Serializable]
-    public abstract class AppaDocumentBase : DataObject
+    public abstract class AppaDocumentBase<T> : DataObject<T>, IAppaDocument
+        where T : DataObject<T>
     {
         protected internal AppaDocumentBase()
         {
@@ -35,6 +36,12 @@ namespace Appalachia.Data.Core.Documents
         [NonSerialized] private bool _isDirty;
 
         #endregion
+
+        protected virtual void SetDefaults()
+        {
+        }
+
+        #region IAppaDocument Members
 
         public bool RequiresMigration => CurrentVersion < PKG.VersionInt;
 
@@ -79,25 +86,21 @@ namespace Appalachia.Data.Core.Documents
         {
             using (_PRF_MarkModified.Auto())
             {
-                this.MarkAsModified();
+                MarkAsModified();
                 IsDirty = true;
                 DateUpdated = DateTime.UtcNow;
             }
         }
 
-        protected virtual void SetDefaults()
-        {
-        }
+        #endregion
 
         #region Profiling
 
-        private const string _PRF_PFX = nameof(AppaDocumentBase) + ".";
-
         private static readonly ProfilerMarker _PRF_AppaDatabaseTypeBase =
-            new ProfilerMarker(_PRF_PFX + nameof(AppaDocumentBase));
+            new ProfilerMarker(_PRF_PFX + nameof(AppaDocumentBase<T>));
 
-        private static readonly ProfilerMarker
-            _PRF_MarkModified = new ProfilerMarker(_PRF_PFX + nameof(MarkModified));
+        private static readonly ProfilerMarker _PRF_MarkModified =
+            new ProfilerMarker(_PRF_PFX + nameof(MarkModified));
 
         #endregion
     }

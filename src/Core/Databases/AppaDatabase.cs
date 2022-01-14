@@ -11,7 +11,7 @@ using Unity.Profiling;
 namespace Appalachia.Data.Core.Databases
 {
     [Serializable]
-    public abstract class AppaDatabase<TDB> : AppaDatabaseBase, IDocumentAccess, ICollectionAccess
+    public abstract class AppaDatabase<TDB> : AppaDatabaseBase<TDB>, IDocumentAccess, ICollectionAccess
         where TDB : AppaDatabase<TDB>, new()
     {
         #region Fields and Autoproperties
@@ -127,8 +127,6 @@ namespace Appalachia.Data.Core.Databases
         #endregion
 
         #region Profiling
-
-        private const string _PRF_PFX = nameof(AppaDatabase<TDB>) + ".";
 
         private static readonly ProfilerMarker _PRF_RegisterCollection =
             new ProfilerMarker(_PRF_PFX + nameof(RegisterCollection));

@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
-using Appalachia.Core.Attributes;
+using Appalachia.Data.Core.Contracts;
 using Appalachia.Data.Core.Documents;
-using Appalachia.Utility.Logging;
 using Appalachia.Utility.Reflection.Extensions;
 using UnityEngine;
 
 namespace Appalachia.Data.Core.Collections
 {
     [Serializable]
-    public abstract class AppaCollection<TD, TC> : AppaCollectionBase
+    public abstract class AppaCollection<TD, TC> : AppaCollectionBase<TC>
         where TD : AppaDocument<TD, TC>
         where TC : AppaCollection<TD, TC>
     {
@@ -21,7 +20,7 @@ namespace Appalachia.Data.Core.Collections
 
         #endregion
 
-        public override IReadOnlyList<AppaDocumentBase> BoxedDocuments => _documents;
+        public override IReadOnlyList<IAppaDocument> BoxedDocuments => _documents;
 
         public IReadOnlyList<TD> Documents => _documents;
     }

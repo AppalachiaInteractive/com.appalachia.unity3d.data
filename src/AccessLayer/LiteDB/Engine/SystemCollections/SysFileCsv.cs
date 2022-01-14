@@ -10,7 +10,7 @@ namespace LiteDB.Engine
 {
     internal class SysFileCsv : SystemCollection
     {
-        private readonly static IFormatProvider _numberFormat = CultureInfo.InvariantCulture.NumberFormat;
+        private static readonly IFormatProvider _numberFormat = CultureInfo.InvariantCulture.NumberFormat;
 
         public SysFileCsv() : base("$file_csv")
         {

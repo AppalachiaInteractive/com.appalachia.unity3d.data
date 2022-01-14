@@ -226,8 +226,6 @@ namespace Appalachia.Data.Core.Configuration
 
         #region Profiling
 
-        private const string _PRF_PFX = nameof(DatabaseConfigurationSettings) + ".";
-
         private static readonly ProfilerMarker _PRF_Deserialize =
             new ProfilerMarker(_PRF_PFX + nameof(Deserialize));
 

@@ -7,7 +7,7 @@ namespace UltraLiteDB
 {
     public class JsonWriter
     {
-        private readonly static IFormatProvider _numberFormat = CultureInfo.InvariantCulture.NumberFormat;
+        private static readonly IFormatProvider _numberFormat = CultureInfo.InvariantCulture.NumberFormat;
 
         private TextWriter _writer;
         private int _indent;
