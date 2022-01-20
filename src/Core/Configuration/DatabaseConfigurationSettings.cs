@@ -25,6 +25,10 @@ namespace Appalachia.Data.Core.Configuration
 
         #endregion
 
+        public DatabaseConfigurationSettings()
+        {
+        }
+
         public DatabaseConfigurationSettings(Object owner) : base(owner)
         {
         }
