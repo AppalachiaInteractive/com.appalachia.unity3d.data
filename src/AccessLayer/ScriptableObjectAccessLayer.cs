@@ -13,8 +13,9 @@ using Unity.Profiling;
 
 namespace Appalachia.Data.AccessLayer
 {
+    [Serializable]
     public class ScriptableObjectAccessLayer : DatabaseAccess<DummyDisposable>, IDataAccess
-    
+
     {
         public ScriptableObjectAccessLayer()
         {
@@ -26,10 +27,44 @@ namespace Appalachia.Data.AccessLayer
         {
         }
 
+        /// <inheritdoc />
         public override DatabaseStyle DatabaseStyle => DatabaseStyle.Document;
+
+        /// <inheritdoc />
         public override DatabaseTechnology DatabaseTechnology => DatabaseTechnology.ScriptableObject;
+
+        /// <inheritdoc />
         protected override bool RequiresCustomTypeSerialization => false;
 
+        /// <inheritdoc />
+        public override void Dispose()
+        {
+        }
+
+        /// <inheritdoc />
+        protected override Func<string, DatabaseConfigurationSettings, DatabaseAccess> GetGenerator()
+        {
+            return (dataStoragePath, settings) => new ScriptableObjectAccessLayer(dataStoragePath, settings);
+        }
+
+        /// <inheritdoc />
+        protected override void OnCreateDatabaseStorage()
+        {
+        }
+
+        /// <inheritdoc />
+        protected override void OnInitializeDatabaseStorage()
+        {
+        }
+
+        /// <inheritdoc />
+        protected override void PrepareConnection()
+        {
+        }
+
+        #region IDataAccess Members
+
+        /// <inheritdoc />
         public override TC CreateCollection<TD, TC>()
         {
             using (_PRF_CreateCollection.Auto())
@@ -44,6 +79,7 @@ namespace Appalachia.Data.AccessLayer
             }
         }
 
+        /// <inheritdoc />
         public override TDB CreateDatabase<TDB>()
         {
             using (_PRF_CreateDatabase.Auto())
@@ -59,6 +95,7 @@ namespace Appalachia.Data.AccessLayer
             }
         }
 
+        /// <inheritdoc />
         public override TD CreateDocument<TD, TC>()
         {
             using (_PRF_CreateDocument.Auto())
@@ -75,10 +112,7 @@ namespace Appalachia.Data.AccessLayer
             }
         }
 
-        public override void Dispose()
-        {
-        }
-
+        /// <inheritdoc />
         public override TDB LoadDatabase<TDB>()
         {
             using (_PRF_LoadDatabase.Auto())
@@ -87,6 +121,7 @@ namespace Appalachia.Data.AccessLayer
             }
         }
 
+        /// <inheritdoc />
         public override void SaveCollection<TD, TC>(TC collection)
         {
             using (_PRF_SaveCollection.Auto())
@@ -102,6 +137,7 @@ namespace Appalachia.Data.AccessLayer
             }
         }
 
+        /// <inheritdoc />
         public override void SaveDatabase<TDB>(TDB database)
         {
             using (_PRF_Save.Auto())
@@ -122,6 +158,7 @@ namespace Appalachia.Data.AccessLayer
             }
         }
 
+        /// <inheritdoc />
         public override void SaveDocument<TD, TC>(TD document)
         {
             using (_PRF_SaveDocument.Auto())
@@ -133,22 +170,7 @@ namespace Appalachia.Data.AccessLayer
             }
         }
 
-        protected override Func<string, DatabaseConfigurationSettings, DatabaseAccess> GetGenerator()
-        {
-            return (dataStoragePath, settings) => new ScriptableObjectAccessLayer(dataStoragePath, settings);
-        }
-
-        protected override void OnCreateDatabaseStorage()
-        {
-        }
-
-        protected override void OnInitializeDatabaseStorage()
-        {
-        }
-
-        protected override void PrepareConnection()
-        {
-        }
+        #endregion
 
         #region Profiling
 

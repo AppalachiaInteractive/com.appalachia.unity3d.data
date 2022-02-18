@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using static LiteDB.Constants;
@@ -7,38 +6,10 @@ using static LiteDB.Constants;
 namespace LiteDB.Engine
 {
     /// <summary>
-    /// Encrypted AES Stream
+    ///     Encrypted AES Stream
     /// </summary>
     public class AesStream : Stream
     {
-        private readonly Aes _aes;
-        private readonly ICryptoTransform _encryptor;
-        private readonly ICryptoTransform _decryptor;
-
-        private readonly Stream _stream;
-        private readonly CryptoStream _reader;
-        private readonly CryptoStream _writer;
-
-        private readonly byte[] _decryptedZeroes = new byte[16];
-
-        public byte[] Salt { get; }
-
-        public override bool CanRead => _stream.CanRead;
-
-        public override bool CanSeek => _stream.CanSeek;
-
-        public override bool CanWrite => _stream.CanWrite;
-
-        public override long Length => _stream.Length - PAGE_SIZE;
-
-        public override long Position
-        {
-            get => _stream.Position - PAGE_SIZE;
-            set => this.Seek(value, SeekOrigin.Begin);
-        }
-
-        public long StreamPosition => _stream.Position;
-
         public AesStream(string password, Stream stream)
         {
             _stream = stream;
@@ -50,15 +21,15 @@ namespace LiteDB.Engine
                 // new file? create new salt
                 if (isNew)
                 {
-                    this.Salt = NewSalt();
+                    Salt = NewSalt();
 
                     // first byte =1 means this datafile is encrypted
                     _stream.WriteByte(1);
-                    _stream.Write(this.Salt, 0, ENCRYPTION_SALT_SIZE);
+                    _stream.Write(Salt, 0, ENCRYPTION_SALT_SIZE);
                 }
                 else
                 {
-                    this.Salt = new byte[ENCRYPTION_SALT_SIZE];
+                    Salt = new byte[ENCRYPTION_SALT_SIZE];
 
                     // checks if this datafile are encrypted
                     var isEncrypted = _stream.ReadByte();
@@ -68,16 +39,16 @@ namespace LiteDB.Engine
                         throw new LiteException(0, "This file is not encrypted");
                     }
 
-                    _stream.Read(this.Salt, 0, ENCRYPTION_SALT_SIZE);
+                    _stream.Read(Salt, 0, ENCRYPTION_SALT_SIZE);
                 }
 
                 _aes = Aes.Create();
                 _aes.Padding = PaddingMode.None;
                 _aes.Mode = CipherMode.ECB;
 
-                var pdb = new Rfc2898DeriveBytes(password, this.Salt);
+                var pdb = new Rfc2898DeriveBytes(password, Salt);
 
-                using (pdb as IDisposable)
+                using (pdb)
                 {
                     _aes.Key = pdb.GetBytes(32);
                     _aes.IV = pdb.GetBytes(16);
@@ -86,13 +57,13 @@ namespace LiteDB.Engine
                 _encryptor = _aes.CreateEncryptor();
                 _decryptor = _aes.CreateDecryptor();
 
-                _reader = _stream.CanRead ?
-                    new CryptoStream(_stream, _decryptor, CryptoStreamMode.Read) :
-                    null;
+                _reader = _stream.CanRead
+                    ? new CryptoStream(_stream, _decryptor, CryptoStreamMode.Read)
+                    : null;
 
-                _writer = _stream.CanWrite ?
-                    new CryptoStream(_stream, _encryptor, CryptoStreamMode.Write) :
-                    null;
+                _writer = _stream.CanWrite
+                    ? new CryptoStream(_stream, _encryptor, CryptoStreamMode.Write)
+                    : null;
 
                 // set stream to password checking
                 _stream.Position = 32;
@@ -137,52 +108,44 @@ namespace LiteDB.Engine
             }
         }
 
-        /// <summary>
-        /// Decrypt data from Stream
-        /// </summary>
-        public override int Read(byte[] array, int offset, int count)
+        #region Fields and Autoproperties
+
+        public byte[] Salt { get; }
+        private readonly Aes _aes;
+
+        private readonly byte[] _decryptedZeroes = new byte[16];
+        private readonly CryptoStream _reader;
+        private readonly CryptoStream _writer;
+        private readonly ICryptoTransform _decryptor;
+        private readonly ICryptoTransform _encryptor;
+
+        private readonly Stream _stream;
+
+        #endregion
+
+        /// <inheritdoc />
+        public override bool CanRead => _stream.CanRead;
+
+        /// <inheritdoc />
+        public override bool CanSeek => _stream.CanSeek;
+
+        /// <inheritdoc />
+        public override bool CanWrite => _stream.CanWrite;
+
+        /// <inheritdoc />
+        public override long Length => _stream.Length - PAGE_SIZE;
+
+        /// <inheritdoc />
+        public override long Position
         {
-            ENSURE(count == PAGE_SIZE, "buffer size must be PAGE_SIZE");
-            ENSURE(this.Position % PAGE_SIZE == 0, "position must be in PAGE_SIZE module");
-
-            var r = _reader.Read(array, offset, count);
-
-            // checks if the first 16 bytes of the page in the original stream are zero
-            // this should never happen, but if it does, return a blank page
-            // the blank page will be skipped by WalIndexService.CheckpointInternal() and WalIndexService.RestoreIndex()
-            if (this.IsBlank(array, offset))
-            {
-                array.Fill(0, offset, count);
-            }
-
-            return r;
+            get => _stream.Position - PAGE_SIZE;
+            set => Seek(value, SeekOrigin.Begin);
         }
 
-        /// <summary>
-        /// Encrypt data to Stream
-        /// </summary>
-        public override void Write(byte[] array, int offset, int count)
-        {
-            ENSURE(count == PAGE_SIZE, "buffer size must be PAGE_SIZE");
-            ENSURE(this.Position % PAGE_SIZE == 0, "position must be in PAGE_SIZE module");
-
-            _writer.Write(array, offset, count);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-
-            _stream?.Dispose();
-
-            _encryptor.Dispose();
-            _decryptor.Dispose();
-
-            _aes.Dispose();
-        }
+        public long StreamPosition => _stream.Position;
 
         /// <summary>
-        /// Get new salt for encryption
+        ///     Get new salt for encryption
         /// </summary>
         public static byte[] NewSalt()
         {
@@ -196,19 +159,67 @@ namespace LiteDB.Engine
             return salt;
         }
 
+        /// <inheritdoc />
         public override void Flush()
         {
             _stream.Flush();
         }
 
+        /// <summary>
+        ///     Decrypt data from Stream
+        /// </summary>
+        public override int Read(byte[] array, int offset, int count)
+        {
+            ENSURE(count == PAGE_SIZE,          "buffer size must be PAGE_SIZE");
+            ENSURE((Position % PAGE_SIZE) == 0, "position must be in PAGE_SIZE module");
+
+            var r = _reader.Read(array, offset, count);
+
+            // checks if the first 16 bytes of the page in the original stream are zero
+            // this should never happen, but if it does, return a blank page
+            // the blank page will be skipped by WalIndexService.CheckpointInternal() and WalIndexService.RestoreIndex()
+            if (IsBlank(array, offset))
+            {
+                array.Fill(0, offset, count);
+            }
+
+            return r;
+        }
+
+        /// <inheritdoc />
         public override long Seek(long offset, SeekOrigin origin)
         {
             return _stream.Seek(offset + PAGE_SIZE, origin);
         }
 
+        /// <inheritdoc />
         public override void SetLength(long value)
         {
             _stream.SetLength(value + PAGE_SIZE);
+        }
+
+        /// <summary>
+        ///     Encrypt data to Stream
+        /// </summary>
+        public override void Write(byte[] array, int offset, int count)
+        {
+            ENSURE(count == PAGE_SIZE,          "buffer size must be PAGE_SIZE");
+            ENSURE((Position % PAGE_SIZE) == 0, "position must be in PAGE_SIZE module");
+
+            _writer.Write(array, offset, count);
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            _stream?.Dispose();
+
+            _encryptor.Dispose();
+            _decryptor.Dispose();
+
+            _aes.Dispose();
         }
 
         private unsafe bool IsBlank(byte[] array, int offset)
@@ -216,10 +227,10 @@ namespace LiteDB.Engine
             fixed (byte* arrayPtr = array)
             fixed (void* vPtr = _decryptedZeroes)
             {
-                ulong* ptr = (ulong*)(arrayPtr + offset);
-                ulong* zeroptr = (ulong*)vPtr;
+                var ptr = (ulong*)(arrayPtr + offset);
+                var zeroptr = (ulong*)vPtr;
 
-                return *ptr == *zeroptr && *(ptr + 1) == *(zeroptr + 1);
+                return (*ptr == *zeroptr) && (*(ptr + 1) == *(zeroptr + 1));
             }
         }
     }

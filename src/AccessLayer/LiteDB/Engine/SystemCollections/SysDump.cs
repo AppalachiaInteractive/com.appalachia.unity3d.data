@@ -1,29 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text;
-using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
     internal class SysDump : SystemCollection
     {
-        private readonly HeaderPage _header;
-        private readonly TransactionMonitor _monitor;
-
         public SysDump(HeaderPage header, TransactionMonitor monitor) : base("$dump")
         {
             _header = header;
             _monitor = monitor;
         }
 
+        #region Fields and Autoproperties
+
+        private readonly HeaderPage _header;
+        private readonly TransactionMonitor _monitor;
+
+        #endregion
+
+        /// <inheritdoc />
         public override IEnumerable<BsonDocument> Input(BsonValue options)
         {
             var pageID = GetOption(options, "pageID");
 
-            return this.DumpPages(pageID == null ? null : (uint?)pageID.AsInt32);
+            return DumpPages(pageID == null ? null : (uint?)pageID.AsInt32);
         }
 
         private IEnumerable<BsonDocument> DumpPages(uint? pageID)
@@ -38,9 +39,14 @@ namespace LiteDB.Engine
             var start = pageID.HasValue ? pageID.Value : 0;
             var end = pageID.HasValue ? pageID.Value : _header.LastPageID;
 
-            for (uint i = start; i <= Math.Min(end, _header.LastPageID); i++)
+            for (var i = start; i <= Math.Min(end, _header.LastPageID); i++)
             {
-                var page = snapshot.GetPage<BasePage>(i, out var origin, out var position, out var walVersion);
+                var page = snapshot.GetPage<BasePage>(
+                    i,
+                    out var origin,
+                    out var position,
+                    out var walVersion
+                );
 
                 var doc = new BsonDocument
                 {
@@ -64,23 +70,33 @@ namespace LiteDB.Engine
                 if (page.PageType == PageType.Collection)
                 {
                     var collectionPage = new CollectionPage(page.Buffer);
-                    doc["dataPageList"] = new BsonArray(collectionPage.FreeDataPageList.Select(x => new BsonValue((int)x)));
-                    doc["indexes"] = new BsonArray(collectionPage.GetCollectionIndexes().Select(x => new BsonDocument
-                    {
-                        ["slot"] = (int)x.Slot,
-                        ["empty"] = x.IsEmpty,
-                        ["indexType"] = (int)x.IndexType,
-                        ["name"] = x.Name,
-                        ["expression"] = x.Expression,
-                        ["unique"] = x.Unique,
-                        ["head"] = x.Head.ToBsonValue(),
-                        ["tail"] = x.Tail.ToBsonValue(),
-                        ["maxLevel"] = (int)x.MaxLevel,
-                        ["freeIndexPageList"] = (int)x.FreeIndexPageList,                        
-                    }));
+                    doc["dataPageList"] = new BsonArray(
+                        collectionPage.FreeDataPageList.Select(x => new BsonValue((int)x))
+                    );
+                    doc["indexes"] = new BsonArray(
+                        collectionPage.GetCollectionIndexes()
+                                      .Select(
+                                           x => new BsonDocument
+                                           {
+                                               ["slot"] = (int)x.Slot,
+                                               ["empty"] = x.IsEmpty,
+                                               ["indexType"] = (int)x.IndexType,
+                                               ["name"] = x.Name,
+                                               ["expression"] = x.Expression,
+                                               ["unique"] = x.Unique,
+                                               ["head"] = x.Head.ToBsonValue(),
+                                               ["tail"] = x.Tail.ToBsonValue(),
+                                               ["maxLevel"] = (int)x.MaxLevel,
+                                               ["freeIndexPageList"] = (int)x.FreeIndexPageList,
+                                           }
+                                       )
+                    );
                 }
 
-                if (pageID.HasValue) doc["buffer"] = page.Buffer.ToArray();
+                if (pageID.HasValue)
+                {
+                    doc["buffer"] = page.Buffer.ToArray();
+                }
 
                 yield return doc;
 

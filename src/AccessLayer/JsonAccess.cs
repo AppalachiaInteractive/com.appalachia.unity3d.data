@@ -30,15 +30,19 @@ namespace Appalachia.Data.AccessLayer.Json
 
         #region Fields and Autoproperties
 
-        protected override bool RequiresCustomTypeSerialization { get; set; }
+        /// <inheritdoc />
+protected override bool RequiresCustomTypeSerialization { get; set; }
 
         #endregion
 
-        public override DatabaseStyle DatabaseStyle => DatabaseStyle.Object;
+        /// <inheritdoc />
+public override DatabaseStyle DatabaseStyle => DatabaseStyle.Object;
 
-        public override DatabaseTechnology DatabaseTechnology => DatabaseTechnology.Json;
+        /// <inheritdoc />
+public override DatabaseTechnology DatabaseTechnology => DatabaseTechnology.Json;
 
-        public override void LoadCollection<TD, TC>(ref AppaCollection<TD, TC> collection)
+        /// <inheritdoc />
+public override void LoadCollection<TD, TC>(ref AppaCollection<TD, TC> collection)
         {
             using (_PRF_LoadCollection.Auto())
             {
@@ -66,7 +70,8 @@ namespace Appalachia.Data.AccessLayer.Json
             }
         }
 
-        public override void Save<T>(T database)
+        /// <inheritdoc />
+public override void Save<T>(T database)
         {
             using (_PRF_Save.Auto())
             {
@@ -85,12 +90,14 @@ namespace Appalachia.Data.AccessLayer.Json
             }
         }
 
-        protected override Func<string, DatabaseConfigurationSettings, DatabaseAccess> GetGenerator()
+        /// <inheritdoc />
+protected override Func<string, DatabaseConfigurationSettings, DatabaseAccess> GetGenerator()
         {
             return (dataStorageLocation, settings) => new JsonAccess(dataStorageLocation, settings);
         }
 
-        protected override void OnCreateDatabaseStorage()
+        /// <inheritdoc />
+protected override void OnCreateDatabaseStorage()
         {
             using (_PRF_CreateDatabaseStorage.Auto())
             {
@@ -109,14 +116,16 @@ namespace Appalachia.Data.AccessLayer.Json
             }
         }
 
-        protected override void OnInitializeDatabaseStorage()
+        /// <inheritdoc />
+protected override void OnInitializeDatabaseStorage()
         {
             using (_PRF_OnInitializeDatabaseStorage.Auto())
             {
             }
         }
 
-        protected override void PrepareConnection()
+        /// <inheritdoc />
+protected override void PrepareConnection()
         {
             using (_PRF_PrepareConnection.Auto())
             {
@@ -145,3 +154,5 @@ namespace Appalachia.Data.AccessLayer.Json
     }
 }
 */
+
+

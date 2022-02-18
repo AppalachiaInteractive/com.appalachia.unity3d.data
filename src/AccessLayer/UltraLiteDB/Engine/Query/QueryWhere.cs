@@ -6,40 +6,48 @@ using Appalachia.Utility.Strings;
 namespace UltraLiteDB
 {
     /// <summary>
-    /// Execute an index scan passing a Func as where
+    ///     Execute an index scan passing a Func as where
     /// </summary>
     internal class QueryWhere : Query
     {
-        private Func<BsonValue, bool> _func;
-        private int _order;
-
-        public QueryWhere(string field, Func<BsonValue, bool> func, int order)
-            : base(field)
+        public QueryWhere(string field, Func<BsonValue, bool> func, int order) : base(field)
         {
             _func = func;
             _order = order;
         }
 
-        internal override IEnumerable<IndexNode> ExecuteIndex(IndexService indexer, CollectionIndex index)
-        {
-            return indexer
-                .FindAll(index, _order)
-                .Where(i => _func(i.Key));
-        }
+        #region Fields and Autoproperties
 
-        internal override bool FilterDocument(BsonDocument doc)
-        {
-            return this.Expression.Execute(doc, true)
-                .Any(x => _func(x));
-        }
+        private Func<BsonValue, bool> _func;
+        private int _order;
 
+        #endregion
+
+        /// <inheritdoc />
         public override string ToString()
         {
             return ZString.Format(
                 "{0}({1}[{2}])",
-                this.UseFilter ? "Filter" : this.UseIndex ? "Scan" : "",
-                _func.ToString(),
-                this.Field);
+                UseFilter
+                    ? "Filter"
+                    : UseIndex
+                        ? "Scan"
+                        : "",
+                _func,
+                Field
+            );
+        }
+
+        /// <inheritdoc />
+        internal override IEnumerable<IndexNode> ExecuteIndex(IndexService indexer, CollectionIndex index)
+        {
+            return indexer.FindAll(index, _order).Where(i => _func(i.Key));
+        }
+
+        /// <inheritdoc />
+        internal override bool FilterDocument(BsonDocument doc)
+        {
+            return Expression.Execute(doc).Any(x => _func(x));
         }
     }
 }

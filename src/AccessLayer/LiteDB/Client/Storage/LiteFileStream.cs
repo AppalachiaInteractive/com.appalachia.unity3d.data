@@ -1,30 +1,26 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using static LiteDB.Constants;
 
 namespace LiteDB
 {
     public partial class LiteFileStream<TFileId> : Stream
     {
+        #region Constants and Static Readonly
+
         /// <summary>
-        /// Number of bytes on each chunk document to store
+        ///     Number of bytes on each chunk document to store
         /// </summary>
         public const int MAX_CHUNK_SIZE = 255 * 1024; // 255kb like GridFS
 
-        private readonly ILiteCollection<LiteFileInfo<TFileId>> _files;
-        private readonly ILiteCollection<BsonDocument> _chunks;
-        private readonly LiteFileInfo<TFileId> _file;
-        private readonly BsonValue _fileId;
-        private readonly FileAccess _mode;
+        #endregion
 
-        private long _streamPosition = 0;
-        private int _currentChunkIndex = 0;
-        private byte[] _currentChunkData = null;
-        private int _positionInChunk = 0;
-        private MemoryStream _buffer;
-
-        internal LiteFileStream(ILiteCollection<LiteFileInfo<TFileId>> files, ILiteCollection<BsonDocument> chunks, LiteFileInfo<TFileId> file, BsonValue fileId, FileAccess mode)
+        internal LiteFileStream(
+            ILiteCollection<LiteFileInfo<TFileId>> files,
+            ILiteCollection<BsonDocument> chunks,
+            LiteFileInfo<TFileId> file,
+            BsonValue fileId,
+            FileAccess mode)
         {
             _files = files;
             _chunks = chunks;
@@ -35,16 +31,19 @@ namespace LiteDB
             if (mode == FileAccess.Read)
             {
                 // initialize first data block
-                _currentChunkData = this.GetChunkData(_currentChunkIndex);
+                _currentChunkData = GetChunkData(_currentChunkIndex);
             }
-            else if(mode == FileAccess.Write)
+            else if (mode == FileAccess.Write)
             {
                 _buffer = new MemoryStream(MAX_CHUNK_SIZE);
 
                 if (_file.Length > 0)
                 {
                     // delete all chunks before re-write
-                    var count = _chunks.DeleteMany("_id BETWEEN { f: @0, n: 0 } AND { f: @0, n: 99999999 }", _fileId);
+                    var count = _chunks.DeleteMany(
+                        "_id BETWEEN { f: @0, n: 0 } AND { f: @0, n: 99999999 }",
+                        _fileId
+                    );
 
                     ENSURE(count == _file.Chunks);
 
@@ -55,38 +54,64 @@ namespace LiteDB
             }
         }
 
-        /// <summary>
-        /// Get file information
-        /// </summary>
-        public LiteFileInfo<TFileId> FileInfo { get { return _file; } }
+        #region Fields and Autoproperties
 
-        public override long Length { get { return _file.Length; } }
+        private readonly BsonValue _fileId;
+        private readonly FileAccess _mode;
+        private readonly ILiteCollection<BsonDocument> _chunks;
 
-        public override bool CanRead { get { return _mode == FileAccess.Read; } }
+        private readonly ILiteCollection<LiteFileInfo<TFileId>> _files;
+        private readonly LiteFileInfo<TFileId> _file;
+        private byte[] _currentChunkData;
+        private int _currentChunkIndex;
+        private int _positionInChunk;
 
-        public override bool CanWrite { get { return _mode == FileAccess.Write; } }
+        private long _streamPosition;
+        private MemoryStream _buffer;
 
-        public override bool CanSeek { get { return false; } }
+        #endregion
 
+        /// <inheritdoc />
+        public override bool CanRead => _mode == FileAccess.Read;
+
+        /// <inheritdoc />
+        public override bool CanSeek => false;
+
+        /// <inheritdoc />
+        public override bool CanWrite => _mode == FileAccess.Write;
+
+        /// <inheritdoc />
+        public override long Length => _file.Length;
+
+        /// <inheritdoc />
         public override long Position
         {
-            get { return _streamPosition; }
-            set { throw new NotSupportedException(); }
+            get => _streamPosition;
+            set => throw new NotSupportedException();
         }
+
+        /// <summary>
+        ///     Get file information
+        /// </summary>
+        public LiteFileInfo<TFileId> FileInfo => _file;
 
         #region Dispose
 
-        private bool _disposed = false;
+        private bool _disposed;
 
+        /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
 
-            if (_disposed) return;
-
-            if (disposing && this.CanWrite)
+            if (_disposed)
             {
-                this.Flush();
+                return;
+            }
+
+            if (disposing && CanWrite)
+            {
+                Flush();
                 _buffer?.Dispose();
             }
 
@@ -97,11 +122,13 @@ namespace LiteDB
 
         #region Not supported operations
 
+        /// <inheritdoc />
         public override long Seek(long offset, SeekOrigin origin)
         {
             throw new NotSupportedException();
         }
 
+        /// <inheritdoc />
         public override void SetLength(long value)
         {
             throw new NotSupportedException();

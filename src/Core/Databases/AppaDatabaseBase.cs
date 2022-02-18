@@ -30,6 +30,7 @@ namespace Appalachia.Data.Core.Databases
             }
         }
 
+        /// <inheritdoc />
         protected override async AppaTask Initialize(Initializer initializer)
         {
             await base.Initialize(initializer);

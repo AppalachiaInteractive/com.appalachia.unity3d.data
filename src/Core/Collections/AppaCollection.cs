@@ -14,12 +14,14 @@ namespace Appalachia.Data.Core.Collections
     {
         #region Fields and Autoproperties
 
+        /// <inheritdoc />
         public override string CollectionName { get; } = typeof(TD).GetSimpleReadableName();
 
         [SerializeField] private List<TD> _documents;
 
         #endregion
 
+        /// <inheritdoc />
         public override IReadOnlyList<IAppaDocument> BoxedDocuments => _documents;
 
         public IReadOnlyList<TD> Documents => _documents;

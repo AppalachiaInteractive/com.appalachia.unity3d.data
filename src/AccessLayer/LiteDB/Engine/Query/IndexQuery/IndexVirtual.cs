@@ -1,40 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
-using Appalachia.Utility.Strings;
 using static LiteDB.Constants;
 
 namespace LiteDB.Engine
 {
     /// <summary>
-    /// Implement virtual index for system collections AND full data collection read
+    ///     Implement virtual index for system collections AND full data collection read
     /// </summary>
     internal class IndexVirtual : Index, IDocumentLookup
     {
-        private readonly IEnumerable<BsonDocument> _source;
-
-        private Dictionary<uint, BsonDocument> _cache = new Dictionary<uint, BsonDocument>();
-
-        public IndexVirtual(IEnumerable<BsonDocument> source)
-            : base(null, 0)
+        public IndexVirtual(IEnumerable<BsonDocument> source) : base(null, 0)
         {
             _source = source;
         }
 
-        public override uint GetCost(CollectionIndex index)
-        {
-            return 100; // virtual index is always full scan
-        }
+        #region Fields and Autoproperties
 
+        private readonly IEnumerable<BsonDocument> _source;
+
+        private Dictionary<uint, BsonDocument> _cache = new Dictionary<uint, BsonDocument>();
+
+        #endregion
+
+        /// <inheritdoc />
         public override IEnumerable<IndexNode> Execute(IndexService indexer, CollectionIndex index)
         {
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc />
+        public override uint GetCost(CollectionIndex index)
+        {
+            return 100; // virtual index is always full scan
+        }
+
+        /// <inheritdoc />
         public override IEnumerable<IndexNode> Run(CollectionPage col, IndexService indexer)
         {
             var rawId = 0u;
 
-            foreach(var doc in _source)
+            foreach (var doc in _source)
             {
                 rawId++;
 
@@ -46,13 +51,24 @@ namespace LiteDB.Engine
                 {
                     _cache[rawId] = doc;
 
-                    if (_cache.Count > VIRTUAL_INDEX_MAX_CACHE) _cache = null;
+                    if (_cache.Count > VIRTUAL_INDEX_MAX_CACHE)
+                    {
+                        _cache = null;
+                    }
                 }
 
                 // return an fake indexNode
                 yield return new IndexNode(doc);
             }
         }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return "FULL COLLECTION SCAN";
+        }
+
+        #region IDocumentLookup Members
 
         public BsonDocument Load(IndexNode node)
         {
@@ -75,9 +91,6 @@ namespace LiteDB.Engine
             return _cache[rawId.PageID];
         }
 
-        public override string ToString()
-        {
-            return string.Format("FULL COLLECTION SCAN");
-        }
+        #endregion
     }
 }

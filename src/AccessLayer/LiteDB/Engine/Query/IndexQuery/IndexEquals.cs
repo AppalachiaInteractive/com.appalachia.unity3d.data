@@ -4,30 +4,30 @@ using Appalachia.Utility.Strings;
 namespace LiteDB.Engine
 {
     /// <summary>
-    /// Implement equals index operation =
+    ///     Implement equals index operation =
     /// </summary>
     internal class IndexEquals : Index
     {
-        private BsonValue _value;
-
-        public IndexEquals(string name, BsonValue value)
-            : base(name, Query.Ascending)
+        public IndexEquals(string name, BsonValue value) : base(name, Query.Ascending)
         {
             _value = value;
         }
 
-        public override uint GetCost(CollectionIndex index)
-        {
-            if (index.Unique) return 1; // best index cost
+        #region Fields and Autoproperties
 
-            return 10; // 
-        }
+        private BsonValue _value;
 
+        #endregion
+
+        /// <inheritdoc />
         public override IEnumerable<IndexNode> Execute(IndexService indexer, CollectionIndex index)
         {
             var node = indexer.Find(index, _value, false, Query.Ascending);
 
-            if (node == null) yield break;
+            if (node == null)
+            {
+                yield break;
+            }
 
             yield return node;
 
@@ -37,25 +37,45 @@ namespace LiteDB.Engine
                 var first = node;
 
                 // first go forward
-                while (!node.Next[0].IsEmpty && ((node = indexer.GetNode(node.Next[0])).Key.CompareTo(_value, indexer.Collation) == 0))
+                while (!node.Next[0].IsEmpty &&
+                       ((node = indexer.GetNode(node.Next[0])).Key.CompareTo(_value, indexer.Collation) == 0))
                 {
-                    if (node.Key.IsMinValue || node.Key.IsMaxValue) break;
+                    if (node.Key.IsMinValue || node.Key.IsMaxValue)
+                    {
+                        break;
+                    }
 
                     yield return node;
                 }
 
                 node = first;
-                
+
                 // and than, go backward
-                while (!node.Prev[0].IsEmpty && ((node = indexer.GetNode(node.Prev[0])).Key.CompareTo(_value, indexer.Collation) == 0))
+                while (!node.Prev[0].IsEmpty &&
+                       ((node = indexer.GetNode(node.Prev[0])).Key.CompareTo(_value, indexer.Collation) == 0))
                 {
-                    if (node.Key.IsMinValue || node.Key.IsMaxValue) break;
+                    if (node.Key.IsMinValue || node.Key.IsMaxValue)
+                    {
+                        break;
+                    }
 
                     yield return node;
                 }
             }
         }
 
+        /// <inheritdoc />
+        public override uint GetCost(CollectionIndex index)
+        {
+            if (index.Unique)
+            {
+                return 1; // best index cost
+            }
+
+            return 10; // 
+        }
+
+        /// <inheritdoc />
         public override string ToString()
         {
             return ZString.Format("INDEX SEEK({0} = {1})", Name, _value);

@@ -12,6 +12,7 @@ namespace LiteDB.Engine
         {
         }
 
+        /// <inheritdoc />
         public override IEnumerable<BsonDocument> Input(BsonValue options)
         {
             var filename = GetOption(options, "filename")?.AsString ??
@@ -30,8 +31,7 @@ namespace LiteDB.Engine
                 {
                     var json = new JsonReader(reader);
 
-                    var source = json.DeserializeArray()
-                        .Select(x => x.AsDocument);
+                    var source = json.DeserializeArray().Select(x => x.AsDocument);
 
                     // read documents inside file and return one-by-one
                     foreach (var doc in source)
@@ -42,12 +42,17 @@ namespace LiteDB.Engine
             }
         }
 
+        /// <inheritdoc />
         public override int Output(IEnumerable<BsonDocument> source, BsonValue options)
         {
-            var filename = GetOption(options, "filename")?.AsString ?? throw new LiteException(0, "Collection $file_json requires string as filename or a document field 'filename'");
-            var pretty = GetOption(options, "pretty", false).AsBoolean;
-            var indent = GetOption(options, "indent", 4).AsInt32;
-            var encoding = GetOption(options, "encoding", "utf-8").AsString;
+            var filename = GetOption(options, "filename")?.AsString ??
+                           throw new LiteException(
+                               0,
+                               "Collection $file_json requires string as filename or a document field 'filename'"
+                           );
+            var pretty = GetOption(options,      "pretty",      false).AsBoolean;
+            var indent = GetOption(options,      "indent",      4).AsInt32;
+            var encoding = GetOption(options,    "encoding",    "utf-8").AsString;
             var overwritten = GetOption(options, "overwritten", false).AsBoolean;
 
             var index = 0;
@@ -61,13 +66,12 @@ namespace LiteDB.Engine
                 {
                     if (index++ == 0)
                     {
-                        fs = new FileStream(filename, overwritten ? FileMode.OpenOrCreate : FileMode.CreateNew);
+                        fs = new FileStream(
+                            filename,
+                            overwritten ? FileMode.OpenOrCreate : FileMode.CreateNew
+                        );
                         writer = new StreamWriter(fs, Encoding.GetEncoding(encoding));
-                        json = new JsonWriter(writer)
-                        {
-                            Pretty = pretty,
-                            Indent = indent
-                        };
+                        json = new JsonWriter(writer) { Pretty = pretty, Indent = indent };
 
                         writer.WriteLine("[");
                     }
@@ -88,8 +92,15 @@ namespace LiteDB.Engine
             }
             finally
             {
-                if (writer != null) writer.Dispose();
-                if (fs != null) fs.Dispose();
+                if (writer != null)
+                {
+                    writer.Dispose();
+                }
+
+                if (fs != null)
+                {
+                    fs.Dispose();
+                }
             }
 
             return index;

@@ -4,20 +4,39 @@ using Appalachia.Utility.Strings;
 
 namespace UltraLiteDB
 {
-	internal class QueryStartsWith : Query
+    internal class QueryStartsWith : Query
     {
-        private BsonValue _value;
-
-        public QueryStartsWith(string field, BsonValue value)
-            : base(field)
+        public QueryStartsWith(string field, BsonValue value) : base(field)
         {
             _value = value;
         }
 
+        #region Fields and Autoproperties
+
+        private BsonValue _value;
+
+        #endregion
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return ZString.Format(
+                "{0}({1} startsWith {2})",
+                UseFilter
+                    ? "Filter"
+                    : UseIndex
+                        ? "Seek"
+                        : "",
+                Field,
+                _value
+            );
+        }
+
+        /// <inheritdoc />
         internal override IEnumerable<IndexNode> ExecuteIndex(IndexService indexer, CollectionIndex index)
         {
             // find first indexNode
-            var node = indexer.Find(index, _value, true, Query.Ascending);
+            var node = indexer.Find(index, _value, true, Ascending);
             var str = _value.AsString;
 
             // navigate using next[0] do next node - if less or equals returns
@@ -42,20 +61,12 @@ namespace UltraLiteDB
             }
         }
 
+        /// <inheritdoc />
         internal override bool FilterDocument(BsonDocument doc)
         {
-            return this.Expression.Execute(doc, false)
-                .Where(x => x.IsString)
-                .Any(x => x.AsString.StartsWith(_value));
-        }
-
-        public override string ToString()
-        {
-            return ZString.Format(
-                "{0}({1} startsWith {2})",
-                this.UseFilter ? "Filter" : this.UseIndex ? "Seek" : "",
-                this.Field,
-                _value);
+            return Expression.Execute(doc, false)
+                             .Where(x => x.IsString)
+                             .Any(x => x.AsString.StartsWith(_value));
         }
     }
 }

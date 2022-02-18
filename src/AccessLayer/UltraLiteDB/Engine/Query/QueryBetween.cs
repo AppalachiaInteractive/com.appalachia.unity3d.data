@@ -6,12 +6,6 @@ namespace UltraLiteDB
 {
     internal class QueryBetween : Query
     {
-        private BsonValue _start;
-        private BsonValue _end;
-
-        private bool _startEquals;
-        private bool _endEquals;
-
         public QueryBetween(string field, BsonValue start, BsonValue end, bool startEquals, bool endEquals)
             : base(field)
         {
@@ -21,10 +15,39 @@ namespace UltraLiteDB
             _endEquals = endEquals;
         }
 
+        #region Fields and Autoproperties
+
+        private bool _endEquals;
+
+        private bool _startEquals;
+        private BsonValue _end;
+        private BsonValue _start;
+
+        #endregion
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return ZString.Format(
+                "{0}({1} between {2}{3} and {4}{5})",
+                UseFilter
+                    ? "Filter"
+                    : UseIndex
+                        ? "IndexSeek"
+                        : "",
+                Field,
+                _startEquals ? "[" : "(",
+                _start,
+                _end,
+                _endEquals ? "]" : ")"
+            );
+        }
+
+        /// <inheritdoc />
         internal override IEnumerable<IndexNode> ExecuteIndex(IndexService indexer, CollectionIndex index)
         {
             // define order
-            var order = _start.CompareTo(_end) <= 0 ? Query.Ascending : Query.Descending;
+            var order = _start.CompareTo(_end) <= 0 ? Ascending : Descending;
 
             // find first indexNode
             var node = indexer.Find(index, _start, true, order);
@@ -35,7 +58,10 @@ namespace UltraLiteDB
                 var diff = node.Key.CompareTo(_start);
 
                 // if current value are not equals start, go out this loop
-                if (diff != 0) break;
+                if (diff != 0)
+                {
+                    break;
+                }
 
                 if (_startEquals)
                 {
@@ -50,7 +76,7 @@ namespace UltraLiteDB
             {
                 var diff = node.Key.CompareTo(_end);
 
-                if (_endEquals && diff == 0)
+                if (_endEquals && (diff == 0))
                 {
                     yield return node;
                 }
@@ -67,28 +93,19 @@ namespace UltraLiteDB
             }
         }
 
+        /// <inheritdoc />
         internal override bool FilterDocument(BsonDocument doc)
         {
-            return this.Expression.Execute(doc, false)
-                .Any(x =>
-                {
-                    return
-                        (_startEquals ? x.CompareTo(_start) >= 0 : x.CompareTo(_start) > 0) &&
-                        (_endEquals ? x.CompareTo(_end) <= 0 : x.CompareTo(_end) < 0);
-                });
-        }
-
-        public override string ToString()
-        {
-            return ZString.Format(
-                "{0}({1} between {2}{3} and {4}{5})",
-                this.UseFilter ? "Filter" : this.UseIndex ? "IndexSeek" : "",
-                this.Field,
-                _startEquals ? "[" : "(",
-                _start, 
-                _end,
-                _endEquals ? "]" : ")"
-                );
+            return Expression.Execute(doc, false)
+                             .Any(
+                                  x =>
+                                  {
+                                      return (_startEquals
+                                                 ? x.CompareTo(_start) >= 0
+                                                 : x.CompareTo(_start) > 0) &&
+                                             (_endEquals ? x.CompareTo(_end) <= 0 : x.CompareTo(_end) < 0);
+                                  }
+                              );
         }
     }
 }

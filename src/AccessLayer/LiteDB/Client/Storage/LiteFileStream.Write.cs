@@ -1,12 +1,18 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using static LiteDB.Constants;
 
 namespace LiteDB
 {
     public partial class LiteFileStream<TFileId> : Stream
     {
+        /// <inheritdoc />
+        public override void Flush()
+        {
+            // write last unsaved chunks
+            WriteChunks(true);
+        }
+
+        /// <inheritdoc />
         public override void Write(byte[] buffer, int offset, int count)
         {
             _streamPosition += count;
@@ -15,18 +21,12 @@ namespace LiteDB
 
             if (_buffer.Length >= MAX_CHUNK_SIZE)
             {
-                this.WriteChunks(false);
+                WriteChunks(false);
             }
         }
 
-        public override void Flush()
-        {
-            // write last unsaved chunks
-            this.WriteChunks(true);
-        }
-
         /// <summary>
-        /// Consume all _buffer bytes and write to chunk collection
+        ///     Consume all _buffer bytes and write to chunk collection
         /// </summary>
         private void WriteChunks(bool flush)
         {
@@ -41,8 +41,7 @@ namespace LiteDB
                 {
                     ["_id"] = new BsonDocument
                     {
-                        ["f"] = _fileId,
-                        ["n"] = _file.Chunks++ // zero-based index
+                        ["f"] = _fileId, ["n"] = _file.Chunks++ // zero-based index
                     }
                 };
 

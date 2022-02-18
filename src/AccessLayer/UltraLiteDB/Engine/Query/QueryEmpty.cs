@@ -1,34 +1,35 @@
 ﻿using System.Collections.Generic;
-using Appalachia.Utility.Strings;
 
 namespace UltraLiteDB
 {
-	/// <summary>
-	/// Placeholder query for returning no values from a collection.
-	/// </summary>
-	internal class QueryEmpty : Query
+    /// <summary>
+    ///     Placeholder query for returning no values from a collection.
+    /// </summary>
+    internal class QueryEmpty : Query
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="QueryEmpty" /> class.
+        ///     Initializes a new instance of the <see cref="QueryEmpty" /> class.
         /// </summary>
-        public QueryEmpty()
-            : base(null)
+        public QueryEmpty() : base(null)
         {
         }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return "(false)";
+        }
+
+        /// <inheritdoc />
         internal override IEnumerable<IndexNode> ExecuteIndex(IndexService indexer, CollectionIndex index)
         {
             yield break;
         }
 
+        /// <inheritdoc />
         internal override bool FilterDocument(BsonDocument doc)
         {
             return false;
-        }
-
-        public override string ToString()
-        {
-            return string.Format("(false)");
         }
     }
 }

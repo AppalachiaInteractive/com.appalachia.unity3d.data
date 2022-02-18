@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using Appalachia.CI.Constants;
 using Appalachia.CI.Integration.Assets;
@@ -8,11 +9,12 @@ using Appalachia.Utility.Strings;
 using Newtonsoft.Json;
 using Sirenix.OdinInspector;
 using Unity.Profiling;
-using UnityEngine;
+using Object = UnityEngine.Object;
 using Random = System.Random;
 
 namespace Appalachia.Data.Core.Configuration
 {
+    [Serializable]
     public class DatabaseConfigurationSettings : AppalachiaBase<DatabaseConfigurationSettings>
     {
         #region Constants and Static Readonly
@@ -49,6 +51,7 @@ namespace Appalachia.Data.Core.Configuration
 
         #endregion
 
+        /// <inheritdoc />
         public override string Name => name;
 
         public static DatabaseConfigurationSettings Deserialize(string dataStoragePath)
