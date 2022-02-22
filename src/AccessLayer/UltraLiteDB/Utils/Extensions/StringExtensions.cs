@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace UltraLiteDB
+﻿namespace UltraLiteDB
 {
     internal static class StringExtensions
     {
